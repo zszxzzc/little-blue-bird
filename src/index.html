@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小蓝鸟</title>
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+  <div class="app">
+    <!-- 左侧导航栏 -->
+    <nav class="nav-rail">
+      <div class="nav-logo">
+        <svg width="28" height="28" viewBox="0 0 64 64">
+          <ellipse cx="31" cy="34" rx="17" ry="14" fill="#4A9EE0"/>
+          <ellipse cx="41" cy="21" rx="11" ry="11" fill="#4A9EE0"/>
+          <ellipse cx="41.5" cy="18.5" rx="2.5" ry="2.5" fill="white"/>
+          <polygon points="52,22 62,20 52,26" fill="#FF8C00"/>
+          <ellipse cx="21" cy="31" rx="13" ry="9" fill="#4A9EE0"/>
+          <ellipse cx="20" cy="30" rx="10" ry="6" fill="#6AB8F7"/>
+          <polygon points="14,30 2,18 6,38" fill="#4A9EE0"/>
+        </svg>
+      </div>
+      <button class="nav-btn active" data-page="monitor" title="活动监测">◉</button>
+      <button class="nav-btn" data-page="journal" title="今日日记">✎</button>
+      <button class="nav-btn" data-page="settings" title="设置">⚙</button>
+      <div class="nav-spacer"></div>
+      <div class="nav-status-dot" id="navStatusDot">●</div>
+    </nav>
+
+    <!-- 右侧内容区 -->
+    <div class="content-wrapper">
+      <main class="content-area">
+        <!-- 活动监测页 -->
+        <section class="page active" id="page-monitor">
+          <div class="monitor-header">
+            <div class="status-row">
+              <span class="status-dot" id="statusDot">●</span>
+              <span class="status-label" id="statusLabel">未运行</span>
+            </div>
+            <button class="btn-primary btn-toggle" id="toggleBtn">开始监测</button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-value" id="entryCount">0</div>
+              <div class="stat-label">记录数</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="totalDuration">0m</div>
+              <div class="stat-label">总时长</div>
+            </div>
+          </div>
+
+          <div class="section-title">最近活动</div>
+          <div class="activity-list" id="activityList">
+            <div class="empty-hint">暂无活动记录</div>
+          </div>
+        </section>
+
+        <!-- 日记编辑页 -->
+        <section class="page" id="page-journal">
+          <div class="journal-layout">
+            <div class="journal-main">
+              <div class="date-nav">
+                <button class="btn-icon" id="prevDay">‹</button>
+                <input type="date" id="journalDate" class="date-input">
+                <button class="btn-icon" id="nextDay">›</button>
+                <button class="btn-small" id="todayBtn">今天</button>
+              </div>
+              <div class="editor-card">
+                <textarea id="journalEditor" placeholder="写点什么..."></textarea>
+              </div>
+              <div class="journal-actions">
+                <button class="btn-primary" id="aiGenBtn">AI 生成</button>
+                <button class="btn-primary btn-organize" id="organizeBtn">整理</button>
+                <button class="btn-green" id="saveBtn">保存</button>
+                <span class="journal-status" id="journalStatus"></span>
+              </div>
+            </div>
+            <div class="journal-sidebar">
+              <div class="sidebar-title">日记归档</div>
+              <div class="journal-date-list" id="journalDateList">
+                <div class="empty-hint">暂无日记</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 设置页 -->
+        <section class="page" id="page-settings">
+          <div class="settings-container">
+            <label class="field-label">DeepSeek API Key</label>
+            <input type="password" id="apiKeyInput" class="field-input field-wide" placeholder="sk-...">
+
+            <label class="field-label">日记语言</label>
+            <select id="langSelect" class="field-select field-narrow">
+              <option value="chinese">中文</option>
+              <option value="english">English</option>
+              <option value="bilingual">混合</option>
+            </select>
+
+            <label class="field-label">数据存放目录</label>
+            <div class="field-row">
+              <input type="text" id="dataDirInput" class="field-input">
+              <button class="btn-small" id="browseDirBtn">浏览</button>
+            </div>
+
+            <label class="field-label">监测间隔（秒）</label>
+            <input type="number" id="intervalInput" class="field-input field-short" min="5" value="30">
+
+            <button class="btn-primary btn-save-settings" id="saveSettingsBtn">保存设置</button>
+            <span class="settings-status" id="settingsStatus"></span>
+          </div>
+        </section>
+      </main>
+
+      <!-- 底部状态栏 -->
+      <footer class="status-bar">
+        <span id="statusBarLeft">未启动监测</span>
+        <span id="statusBarRight"></span>
+      </footer>
+    </div>
+  </div>
+
+  <script src="scripts/app.js"></script>
+  <script src="scripts/monitor.js"></script>
+  <script src="scripts/journal.js"></script>
+  <script src="scripts/settings.js"></script>
+</body>
+</html>

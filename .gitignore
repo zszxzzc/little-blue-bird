@@ -1,0 +1,17 @@
+# Rust / Tauri
+src-tauri/target/
+
+# Python
+__pycache__/
+*.pyc
+
+# Data (user private)
+data/
+config.json
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/
