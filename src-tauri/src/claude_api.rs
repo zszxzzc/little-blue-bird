@@ -53,7 +53,7 @@ fn fmt_duration(sec: u64) -> String {
 }
 
 /// 流式调用 DeepSeek API，通过事件推送每个 chunk
-async fn call_api_stream(
+pub async fn call_api_stream(
     app: &AppHandle,
     api_key: &str,
     model: &str,
@@ -126,6 +126,7 @@ pub async fn generate(
     api_key: &str,
     model: &str,
     language: &str,
+    personality: &str,
     date: &str,
     existing_text: &str,
     data_dir: &PathBuf,
@@ -174,21 +175,26 @@ pub async fn generate(
         _ => user_msg.push_str("请使用中文写日记。"),
     }
 
-    let system_prompt = concat!(
-        "你是一个日记助手。根据用户提供的电脑活动数据和备注，写一篇自然的日记。\n",
-        "要求：\n",
-        "- 第一人称\n",
-        "- 按时间/事件顺序组织\n",
-        "- 润色总结，不是流水账。提炼、归纳，合并同类事项\n",
-        "- 技术细节适当简化，记录做了什么和结果如何\n",
-        "- 保留情绪和感受\n",
-        "- 语气自然口语化\n",
-        "- 格式：# YYYY-MM-DD 星期X 开头\n",
-        "- 如果是双语，中文在上，英文在下，用 --- 分隔\n",
-        "- 末尾加 *记录时间：HH:MM*",
+    let persona = crate::personality::get(personality);
+    let system_prompt = format!(
+        "{}\n{}",
+        persona.ai_persona,
+        concat!(
+            "你是一个日记助手。根据用户提供的电脑活动数据和备注，写一篇自然的日记。\n",
+            "要求：\n",
+            "- 第一人称\n",
+            "- 按时间/事件顺序组织\n",
+            "- 润色总结，不是流水账。提炼、归纳，合并同类事项\n",
+            "- 技术细节适当简化，记录做了什么和结果如何\n",
+            "- 保留情绪和感受\n",
+            "- 语气自然口语化\n",
+            "- 格式：# YYYY-MM-DD 星期X 开头\n",
+            "- 如果是双语，中文在上，英文在下，用 --- 分隔\n",
+            "- 末尾加 *记录时间：HH:MM*",
+        )
     );
 
-    call_api_stream(app, api_key, model, system_prompt, &user_msg).await
+    call_api_stream(app, api_key, model, &system_prompt, &user_msg).await
 }
 
 /// 整理日记
@@ -197,6 +203,7 @@ pub async fn organize(
     api_key: &str,
     model: &str,
     language: &str,
+    personality: &str,
     date: &str,
     raw_content: &str,
 ) -> Result<String, String> {
@@ -220,21 +227,97 @@ pub async fn organize(
         _ => user_msg.push_str("请使用中文写日记。"),
     }
 
-    let system_prompt = concat!(
-        "你是一个日记整理助手。用户会给你一段日记内容，可能包含：已有的完整日记、用户新加的笔记、AI生成的片段等。\n",
-        "你的任务是将它们整合成一篇连贯自然的日记。\n",
-        "核心原则：\n",
-        "- 绝对不能丢失任何用户写的内容，每一句用户新增的话都必须体现在最终结果中\n",
-        "- 用户新加的笔记要融入到日记的合适位置，不能忽略或吞掉\n",
-        "- 如果原文已经很完整，只需要把新增内容自然地插入到对应位置即可，不要大幅重写\n",
-        "格式要求：\n",
-        "- 第一人称\n",
-        "- 按时间/事件顺序组织\n",
-        "- 语气自然口语化\n",
-        "- 格式：# YYYY-MM-DD 星期X 开头\n",
-        "- 如果是双语，中文在上，英文在下，用 --- 分隔，新增内容两个语言版本都要加\n",
-        "- 末尾加 *记录时间：HH:MM*",
+    let persona = crate::personality::get(personality);
+    let system_prompt = format!(
+        "{}\n{}",
+        persona.ai_persona,
+        concat!(
+            "你是一个日记整理助手。用户会给你一段日记内容，可能包含：已有的完整日记、用户新加的笔记、AI生成的片段等。\n",
+            "你的任务是将它们整合成一篇连贯自然的日记。\n",
+            "核心原则：\n",
+            "- 绝对不能丢失任何用户写的内容，每一句用户新增的话都必须体现在最终结果中\n",
+            "- 用户新加的笔记要融入到日记的合适位置，不能忽略或吞掉\n",
+            "- 如果原文已经很完整，只需要把新增内容自然地插入到对应位置即可，不要大幅重写\n",
+            "格式要求：\n",
+            "- 第一人称\n",
+            "- 按时间/事件顺序组织\n",
+            "- 语气自然口语化\n",
+            "- 格式：# YYYY-MM-DD 星期X 开头\n",
+            "- 如果是双语，中文在上，英文在下，用 --- 分隔，新增内容两个语言版本都要加\n",
+            "- 末尾加 *记录时间：HH:MM*",
+        )
     );
 
-    call_api_stream(app, api_key, model, system_prompt, &user_msg).await
+    call_api_stream(app, api_key, model, &system_prompt, &user_msg).await
+}
+
+/// 生成周报/月报
+pub async fn report(
+    app: &AppHandle,
+    api_key: &str,
+    model: &str,
+    language: &str,
+    personality: &str,
+    days: usize,
+    data_dir: &PathBuf,
+) -> Result<String, String> {
+    use crate::journal;
+    let today = chrono::Local::now().date_naive();
+    let report_type = if days <= 7 { "周报" } else { "月报" };
+
+    let mut journal_parts = Vec::new();
+    for i in 0..days {
+        let date = today - chrono::Duration::days(i as i64);
+        let ds = date.format("%Y-%m-%d").to_string();
+        let content = journal::load(data_dir, &ds);
+        if !content.trim().is_empty() {
+            let snippet: String = content.chars().take(200).collect();
+            journal_parts.push(format!("【{}】{}", ds, snippet));
+        }
+    }
+
+    let daily = activity::daily_totals(data_dir, days);
+    let cats = activity::range_summary(data_dir, days);
+
+    let mut user_msg = format!("请根据以下数据生成一份{}（最近 {} 天）。\n\n", report_type, days);
+
+    if !daily.is_empty() {
+        user_msg.push_str("每日活动时长：\n");
+        for (date, sec) in &daily {
+            if *sec > 0 {
+                user_msg.push_str(&format!("- {}: {}\n", date, fmt_duration(*sec)));
+            }
+        }
+        user_msg.push('\n');
+    }
+
+    if !cats.is_empty() {
+        user_msg.push_str("分类汇总：\n");
+        for (cat, sec) in &cats {
+            user_msg.push_str(&format!("- {}: {}\n", cat, fmt_duration(*sec)));
+        }
+        user_msg.push('\n');
+    }
+
+    if !journal_parts.is_empty() {
+        user_msg.push_str("日记摘要：\n");
+        for part in &journal_parts {
+            user_msg.push_str(&format!("{}\n", part));
+        }
+        user_msg.push('\n');
+    }
+
+    match language {
+        "english" => user_msg.push_str("Please write the report in English."),
+        _ => user_msg.push_str("请使用中文。"),
+    }
+
+    let persona = crate::personality::get(personality);
+    let system_prompt = format!(
+        "{}\n你是一个{rt}助手。根据用户提供的活动数据和日记摘要，生成一份简洁的{rt}。\n\
+         要求：总结主要活动和成果、分析时间分配、提出简短改进建议、语气轻松友好、Markdown 格式、300 字以内。",
+        persona.ai_persona, rt = report_type
+    );
+
+    call_api_stream(app, api_key, model, &system_prompt, &user_msg).await
 }

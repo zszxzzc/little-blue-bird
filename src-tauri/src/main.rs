@@ -4,9 +4,18 @@ mod activity;
 mod claude_api;
 mod commands;
 mod config;
+mod inspiration;
 mod journal;
+mod memes;
+mod mood;
+mod personality;
+mod social;
 mod tracker;
 mod tray_icon;
+mod villain;
+mod vocab;
+mod world;
+mod theater;
 
 use commands::{TrayState, TrackerState};
 use std::sync::Mutex;
@@ -92,12 +101,42 @@ fn main() {
             commands::get_today_activity,
             commands::load_activity,
             commands::get_activity_summary,
+            commands::get_daily_totals,
+            commands::get_range_summary,
             commands::load_journal,
             commands::save_journal,
+            commands::delete_journal,
             commands::list_journal_dates,
+            commands::search_journals,
             commands::ai_generate,
             commands::ai_organize,
+            commands::ai_report,
             commands::browse_directory,
+            commands::pick_and_read_file,
+            commands::get_chick_mood,
+            commands::get_social_status,
+            commands::get_today_villain,
+            commands::seal_villain,
+            commands::get_memes,
+            commands::refresh_memes,
+            commands::add_meme,
+            commands::delete_meme,
+            commands::get_world_state,
+            commands::get_world_history,
+            commands::get_theater,
+            commands::list_theater_dates,
+            commands::generate_theater,
+            commands::save_theater,
+            commands::get_today_vocab,
+            commands::extract_today_words,
+            commands::generate_vocab_examples,
+            commands::get_inspiration_notes,
+            commands::add_inspiration,
+            commands::delete_inspiration,
+            commands::get_alchemy_recipes,
+            commands::alchemy_synthesize,
+            commands::get_personality_growth,
+            commands::add_personality_affinity,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

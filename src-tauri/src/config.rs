@@ -14,6 +14,10 @@ pub struct AppConfig {
     pub interval: u64,
     #[serde(default)]
     pub data_dir: String,
+    #[serde(default)]
+    pub daily_goal_minutes: u64,
+    #[serde(default = "default_personality")]
+    pub personality: String,
 }
 
 fn default_model() -> String {
@@ -28,6 +32,10 @@ fn default_interval() -> u64 {
     30
 }
 
+fn default_personality() -> String {
+    "gentle".to_string()
+}
+
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
@@ -36,6 +44,8 @@ impl Default for AppConfig {
             language: default_language(),
             interval: default_interval(),
             data_dir: String::new(),
+            daily_goal_minutes: 0,
+            personality: default_personality(),
         }
     }
 }

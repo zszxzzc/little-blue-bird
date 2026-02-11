@@ -9,21 +9,45 @@
 <body>
   <div class="app">
     <!-- 左侧导航栏 -->
-    <nav class="nav-rail">
-      <div class="nav-logo">
-        <svg width="28" height="28" viewBox="0 0 64 64">
-          <ellipse cx="31" cy="34" rx="17" ry="14" fill="#4A9EE0"/>
-          <ellipse cx="41" cy="21" rx="11" ry="11" fill="#4A9EE0"/>
-          <ellipse cx="41.5" cy="18.5" rx="2.5" ry="2.5" fill="white"/>
-          <polygon points="52,22 62,20 52,26" fill="#FF8C00"/>
-          <ellipse cx="21" cy="31" rx="13" ry="9" fill="#4A9EE0"/>
-          <ellipse cx="20" cy="30" rx="10" ry="6" fill="#6AB8F7"/>
-          <polygon points="14,30 2,18 6,38" fill="#4A9EE0"/>
-        </svg>
+    <nav class="nav-rail" id="navRail">
+      <div class="nav-header">
+        <div class="nav-logo">
+          <svg width="28" height="28" viewBox="0 0 64 64">
+            <ellipse cx="31" cy="34" rx="17" ry="14" fill="#4A9EE0"/>
+            <ellipse cx="41" cy="21" rx="11" ry="11" fill="#4A9EE0"/>
+            <ellipse cx="41.5" cy="18.5" rx="2.5" ry="2.5" fill="white"/>
+            <polygon points="52,22 62,20 52,26" fill="#FF8C00"/>
+            <ellipse cx="21" cy="31" rx="13" ry="9" fill="#4A9EE0"/>
+            <ellipse cx="20" cy="30" rx="10" ry="6" fill="#6AB8F7"/>
+            <polygon points="14,30 2,18 6,38" fill="#4A9EE0"/>
+          </svg>
+        </div>
+        <span class="nav-app-name">小蓝鸟</span>
+        <button class="nav-settings-btn" id="navSettingsBtn" title="设置">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
       </div>
-      <button class="nav-btn active" data-page="monitor" title="活动监测">◉</button>
-      <button class="nav-btn" data-page="journal" title="今日日记">✎</button>
-      <button class="nav-btn" data-page="settings" title="设置">⚙</button>
+      <button class="nav-btn active" data-page="home" title="主页">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="nav-label">主页</span>
+      </button>
+      <button class="nav-btn" data-page="monitor" title="活动监测">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span><span class="nav-label">活动监测</span>
+      </button>
+      <button class="nav-btn" data-page="journal" title="今日日记">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span><span class="nav-label">今日日记</span>
+      </button>
+      <button class="nav-btn" data-page="world" title="我的世界">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span class="nav-label">世界</span>
+      </button>
+      <button class="nav-btn" data-page="inspiration" title="灵感炼金">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 12 18.469c-.874 0-1.71-.346-2.328-.964l-.548-.547z"/></svg></span><span class="nav-label">灵感</span>
+      </button>
+      <button class="nav-btn" data-page="museum" title="收藏馆">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg></span><span class="nav-label">收藏馆</span>
+      </button>
       <div class="nav-spacer"></div>
       <div class="nav-status-dot" id="navStatusDot">●</div>
     </nav>
@@ -31,8 +55,168 @@
     <!-- 右侧内容区 -->
     <div class="content-wrapper">
       <main class="content-area">
+        <!-- 主页 -->
+        <section class="page active" id="page-home">
+          <div class="home-container">
+            <div class="home-mascot" id="chickMascot" data-mood="happy">
+              <svg width="180" height="180" viewBox="0 0 64 64" fill="none">
+                <!-- 翅膀 -->
+                <ellipse cx="10" cy="28" rx="6" ry="3.5" fill="#FFCA28" transform="rotate(-30 10 28)"/>
+                <ellipse cx="8" cy="31" rx="5" ry="3" fill="#FFE082" transform="rotate(-15 8 31)"/>
+                <!-- 身体 -->
+                <ellipse cx="30" cy="37" rx="17" ry="16" fill="#FFD54F"/>
+                <!-- 头 -->
+                <circle cx="40" cy="21" r="14" fill="#FFD54F"/>
+                <!-- 头毛 -->
+                <ellipse cx="36" cy="8" rx="1.8" ry="4.5" fill="#FFCA28" transform="rotate(-15 36 8)"/>
+                <ellipse cx="40" cy="7.5" rx="1.5" ry="4" fill="#FFE082" transform="rotate(5 40 7.5)"/>
+                <ellipse cx="43" cy="9" rx="1.3" ry="3.5" fill="#FFCA28" transform="rotate(20 43 9)"/>
+                <!-- 翅膀(前) -->
+                <g class="chick-wing"><ellipse cx="18" cy="35" rx="11" ry="8" fill="#FFCA28"/><ellipse cx="17.5" cy="34" rx="8" ry="5.5" fill="#FFE082"/></g>
+
+                <!-- 默认眼睛 (happy/bored) -->
+                <g class="chick-eye chick-eye-normal">
+                  <circle cx="46" cy="18" r="4.5" fill="white"/>
+                  <circle cx="47.2" cy="18" r="3" fill="#1a1a2e"/>
+                  <circle cx="48.2" cy="16.8" r="1.2" fill="white"/>
+                  <circle cx="46.5" cy="19" r="0.6" fill="white"/>
+                </g>
+
+                <!-- 开心眼 (content) ^^ -->
+                <g class="chick-eye-happy">
+                  <path d="M43,17 Q46,13 49,17" stroke="#1a1a2e" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                </g>
+
+                <!-- 星星眼 (excited) -->
+                <g class="chick-eye-star">
+                  <polygon points="46,14 47,17 50,17 47.5,19 48.5,22 46,20 43.5,22 44.5,19 42,17 45,17" fill="#FFB300"/>
+                </g>
+
+                <!-- 困困眼 (sleepy) -->
+                <g class="chick-eye-sleepy">
+                  <line x1="43" y1="18" x2="49" y2="18" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+                  <line x1="43.5" y1="16" x2="45" y2="17.5" stroke="#1a1a2e" stroke-width="1.2" stroke-linecap="round"/>
+                </g>
+
+                <!-- 难过眼 (sad) -->
+                <g class="chick-eye-sad">
+                  <circle cx="46" cy="18" r="4.5" fill="white"/>
+                  <circle cx="47" cy="19" r="2.8" fill="#1a1a2e"/>
+                  <circle cx="47.8" cy="17.8" r="1" fill="white"/>
+                  <ellipse cx="46" cy="24" rx="1.2" ry="2" fill="#64B5F6" class="chick-tear"/>
+                </g>
+
+                <!-- 无语眼 (unimpressed) -->
+                <g class="chick-eye-unimpressed">
+                  <line x1="43" y1="18" x2="49" y2="18" stroke="#1a1a2e" stroke-width="2.5" stroke-linecap="round"/>
+                </g>
+
+                <!-- 嘴巴 -->
+                <ellipse cx="55" cy="23" rx="4" ry="2.2" fill="#FF8F00"/>
+                <ellipse cx="55" cy="24.2" rx="3.5" ry="1.5" fill="#F57C00"/>
+
+                <!-- 腮红 -->
+                <circle class="chick-blush" cx="44" cy="27.5" r="3.5" fill="#FF8A80" opacity="0.3"/>
+
+                <!-- zzz (sleepy) -->
+                <g class="chick-zzz">
+                  <text x="52" y="10" font-size="7" fill="#8E8E93" font-weight="bold">z</text>
+                  <text x="56" y="6" font-size="5" fill="#8E8E93" font-weight="bold">z</text>
+                </g>
+
+                <!-- 脚 -->
+                <path d="M26,52 L23,58 M26,52 L26.5,58.5 M26,52 L29.5,57" stroke="#FF8F00" stroke-width="2" stroke-linecap="round"/>
+                <path d="M35,52 L32,58 M35,52 L35.5,58.5 M35,52 L38.5,57" stroke="#FF8F00" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="home-greeting" id="homeGreeting">你好呀 ~</div>
+            <div class="home-subtitle" id="homeSubtitle">今天也要元气满满哦</div>
+
+            <!-- 番茄钟 -->
+            <div class="pomodoro" id="pomodoro">
+              <div class="pomo-ring">
+                <svg class="pomo-svg" viewBox="0 0 120 120">
+                  <circle class="pomo-track" cx="60" cy="60" r="52" fill="none" stroke-width="6"/>
+                  <circle class="pomo-progress" id="pomoProgress" cx="60" cy="60" r="52" fill="none" stroke-width="6"
+                    stroke-dasharray="326.73" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="pomo-time-row">
+                  <button class="pomo-adj" id="pomoMinus">−</button>
+                  <div class="pomo-time" id="pomoTime">25:00</div>
+                  <button class="pomo-adj" id="pomoPlus">+</button>
+                </div>
+              </div>
+              <div class="pomo-label" id="pomoLabel">专注时间</div>
+              <div class="pomo-controls">
+                <button class="btn-primary pomo-btn" id="pomoStartBtn">开始专注</button>
+                <button class="btn-small pomo-reset" id="pomoResetBtn">重置</button>
+              </div>
+              <div class="pomo-stats">
+                <span id="pomoCount">今日 0 个番茄</span>
+              </div>
+            </div>
+
+            <!-- 每日目标进度 -->
+            <div class="goal-progress" id="goalProgress" style="display:none">
+              <div class="goal-header">
+                <span class="goal-label">今日目标</span>
+                <span class="goal-pct" id="goalPct">0%</span>
+              </div>
+              <div class="goal-bar-track">
+                <div class="goal-bar-fill" id="goalBarFill"></div>
+              </div>
+            </div>
+
+            <!-- 社交能量条 -->
+            <div class="social-energy" id="socialEnergy" style="display:none">
+              <div class="goal-header">
+                <span class="goal-label">社交能量</span>
+                <span class="goal-pct social-pct" id="socialPct">0%</span>
+              </div>
+              <div class="goal-bar-track">
+                <div class="social-bar-fill" id="socialBarFill"></div>
+              </div>
+            </div>
+
+            <!-- 英语词汇拾取 -->
+            <div class="vocab-card" id="vocabCard" style="display:none">
+              <div class="goal-header">
+                <span class="goal-label">📦 今日拾取</span>
+                <button class="btn-small" id="vocabGenBtn">生成例句</button>
+              </div>
+              <div class="vocab-list" id="vocabList"></div>
+            </div>
+
+            <!-- 今日反派 -->
+            <div class="villain-card" id="villainCard" style="display:none">
+              <div class="villain-header">
+                <span class="villain-emoji" id="villainEmoji"></span>
+                <div class="villain-info">
+                  <div class="villain-name" id="villainName"></div>
+                  <div class="villain-time" id="villainTime"></div>
+                </div>
+              </div>
+              <div class="villain-taunt" id="villainTaunt"></div>
+              <div class="villain-actions">
+                <button class="btn-small villain-seal-btn" id="villainSealBtn">封印</button>
+                <button class="btn-small villain-let-btn" id="villainLetBtn">放纵一次</button>
+              </div>
+              <!-- 封印输入 -->
+              <div class="villain-seal-input" id="villainSealInput" style="display:none">
+                <input type="text" id="sealCondition" class="field-input" placeholder="输入封印条件，如：先写200字">
+                <button class="btn-small" id="sealConfirmBtn">确认封印</button>
+              </div>
+            </div>
+
+            <!-- 小剧场入口 -->
+            <button class="btn-theater" id="theaterBtn" style="display:none">
+              <span>🎭</span> 生成今日小剧场
+            </button>
+          </div>
+        </section>
+
         <!-- 活动监测页 -->
-        <section class="page active" id="page-monitor">
+        <section class="page" id="page-monitor">
           <div class="monitor-header">
             <div class="status-row">
               <span class="status-dot" id="statusDot">●</span>
@@ -56,64 +240,381 @@
           <div class="activity-list" id="activityList">
             <div class="empty-hint">暂无活动记录</div>
           </div>
+
+          <div class="stats-section">
+            <div class="stats-section-header">
+              <div class="section-title">数据统计</div>
+              <div class="stats-tabs">
+                <button class="stats-tab active" data-range="7">7天</button>
+                <button class="stats-tab" data-range="30">30天</button>
+              </div>
+            </div>
+            <div class="daily-chart" id="dailyChart"></div>
+            <div class="category-bars" id="categoryBars"></div>
+            <div class="report-actions">
+              <button class="btn-small" id="weekReportBtn">AI 周报</button>
+              <button class="btn-small" id="monthReportBtn">AI 月报</button>
+            </div>
+          </div>
+
+          <!-- 报告弹窗 -->
+          <div class="report-overlay" id="reportOverlay">
+            <div class="report-panel">
+              <div class="report-panel-header">
+                <span class="report-panel-title" id="reportTitle">AI 周报</span>
+                <button class="settings-close-btn" id="reportCloseBtn">✕</button>
+              </div>
+              <div class="report-content" id="reportContent">
+                <div class="empty-hint">生成中…</div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <!-- 日记编辑页 -->
         <section class="page" id="page-journal">
           <div class="journal-layout">
             <div class="journal-main">
-              <div class="date-nav">
-                <button class="btn-icon" id="prevDay">‹</button>
-                <input type="date" id="journalDate" class="date-input">
-                <button class="btn-icon" id="nextDay">›</button>
-                <button class="btn-small" id="todayBtn">今天</button>
+              <div class="date-strip">
+                <div class="date-strip-header">
+                  <button class="strip-arrow" id="prevWeek">‹</button>
+                  <span class="strip-month clickable" id="stripMonth"></span>
+                  <button class="strip-arrow" id="nextWeek">›</button>
+                  <button class="strip-today" id="todayBtn">今天</button>
+                </div>
+                <!-- 月历弹窗 -->
+                <div class="calendar-popup" id="calendarPopup">
+                  <div class="calendar-popup-header">
+                    <button class="strip-arrow" id="calPrevMonth">‹</button>
+                    <span class="calendar-popup-title" id="calTitle"></span>
+                    <button class="strip-arrow" id="calNextMonth">›</button>
+                  </div>
+                  <div class="calendar-popup-weekdays">
+                    <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                  </div>
+                  <div class="calendar-popup-days" id="calDays"></div>
+                </div>
+                <div class="date-strip-weekdays">
+                  <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                </div>
+                <div class="date-strip-days" id="dateStripDays"></div>
               </div>
               <div class="editor-card">
+                <div class="editor-toolbar">
+                  <button class="toolbar-btn" id="aiGenBtn" title="AI 生成">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <span>AI 生成</span>
+                  </button>
+                  <button class="toolbar-btn" id="organizeBtn" title="整理">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    <span>整理</span>
+                  </button>
+                  <button class="toolbar-btn" id="importBtn" title="导入">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>导入</span>
+                  </button>
+                  <span class="journal-status" id="journalStatus"></span>
+                  <button class="toolbar-btn toolbar-btn-right" id="previewBtn" title="预览 Markdown">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <span>预览</span>
+                  </button>
+                </div>
                 <textarea id="journalEditor" placeholder="写点什么..."></textarea>
+                <div class="journal-preview" id="journalPreview"></div>
               </div>
               <div class="journal-actions">
-                <button class="btn-primary" id="aiGenBtn">AI 生成</button>
-                <button class="btn-primary btn-organize" id="organizeBtn">整理</button>
                 <button class="btn-green" id="saveBtn">保存</button>
-                <span class="journal-status" id="journalStatus"></span>
+                <button class="btn-icon-danger" id="deleteBtn" title="删除">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
               </div>
             </div>
-            <div class="journal-sidebar">
-              <div class="sidebar-title">日记归档</div>
-              <div class="journal-date-list" id="journalDateList">
-                <div class="empty-hint">暂无日记</div>
+            <div class="resize-handle" id="resizeHandle"></div>
+            <div class="journal-sidebar" id="journalSidebar">
+              <button class="sidebar-toggle" id="sidebarToggle" title="折叠/展开">›</button>
+              <div class="sidebar-content">
+                <div class="sidebar-title">日记归档</div>
+                <div class="sidebar-search">
+                  <input type="text" id="journalSearchInput" class="search-input" placeholder="搜索日记...">
+                </div>
+                <div class="journal-date-list" id="journalDateList">
+                  <div class="empty-hint">暂无日记</div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- 设置页 -->
-        <section class="page" id="page-settings">
-          <div class="settings-container">
-            <label class="field-label">DeepSeek API Key</label>
-            <input type="password" id="apiKeyInput" class="field-input field-wide" placeholder="sk-...">
-
-            <label class="field-label">日记语言</label>
-            <select id="langSelect" class="field-select field-narrow">
-              <option value="chinese">中文</option>
-              <option value="english">English</option>
-              <option value="bilingual">混合</option>
-            </select>
-
-            <label class="field-label">数据存放目录</label>
-            <div class="field-row">
-              <input type="text" id="dataDirInput" class="field-input">
-              <button class="btn-small" id="browseDirBtn">浏览</button>
+        <!-- 世界观页面 -->
+        <section class="page" id="page-world">
+          <div class="world-container">
+            <div class="world-header">
+              <h2 class="world-title">我的小世界</h2>
+              <span class="world-days" id="worldDays">第 0 天</span>
             </div>
 
-            <label class="field-label">监测间隔（秒）</label>
-            <input type="number" id="intervalInput" class="field-input field-short" min="5" value="30">
+            <!-- 地图区域 - 用 CSS Grid 布局 -->
+            <div class="world-map" id="worldMap">
+              <div class="world-zone" data-zone="library">
+                <div class="zone-icon" id="zoneIconLibrary">📚</div>
+                <div class="zone-name">图书馆</div>
+                <div class="zone-level" id="zoneLevelLibrary">Lv.1 小书摊</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpLibrary"></div></div>
+              </div>
+              <div class="world-zone" data-zone="theater">
+                <div class="zone-icon" id="zoneIconTheater">🎭</div>
+                <div class="zone-name">剧场</div>
+                <div class="zone-level" id="zoneLevelTheater">Lv.1 露天台</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpTheater"></div></div>
+              </div>
+              <div class="world-zone" data-zone="park">
+                <div class="zone-icon" id="zoneIconPark">🌳</div>
+                <div class="zone-name">公园</div>
+                <div class="zone-level" id="zoneLevelPark">Lv.1 草地</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpPark"></div></div>
+              </div>
+              <div class="world-zone" data-zone="cafe">
+                <div class="zone-icon" id="zoneIconCafe">☕</div>
+                <div class="zone-name">咖啡馆</div>
+                <div class="zone-level" id="zoneLevelCafe">Lv.1 路边摊</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpCafe"></div></div>
+              </div>
+              <div class="world-zone" data-zone="playground">
+                <div class="zone-icon" id="zoneIconPlayground">🎮</div>
+                <div class="zone-name">游乐场</div>
+                <div class="zone-level" id="zoneLevelPlayground">Lv.1 秋千</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpPlayground"></div></div>
+              </div>
+              <div class="world-zone" data-zone="diary_house">
+                <div class="zone-icon" id="zoneIconDiary">📖</div>
+                <div class="zone-name">日记小屋</div>
+                <div class="zone-level" id="zoneLevelDiary">Lv.1 帐篷</div>
+                <div class="zone-xp-bar"><div class="zone-xp-fill" id="zoneXpDiary"></div></div>
+              </div>
+              <div class="world-zone world-zone-dark" data-zone="dark_cloud" id="darkCloudZone" style="display:none">
+                <div class="zone-icon">🌧️</div>
+                <div class="zone-name">乌云</div>
+                <div class="zone-level" id="zoneLevelDark">无</div>
+              </div>
+            </div>
 
-            <button class="btn-primary btn-save-settings" id="saveSettingsBtn">保存设置</button>
-            <span class="settings-status" id="settingsStatus"></span>
+            <!-- 最近变化 -->
+            <div class="world-history">
+              <div class="section-title">最近动态</div>
+              <div class="world-history-list" id="worldHistoryList">
+                <div class="empty-hint">暂无数据，开始使用后会自动记录</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 灵感炼金术页面 -->
+        <section class="page" id="page-inspiration">
+          <div class="inspiration-container">
+            <div class="inspiration-header">
+              <h2 class="world-title">灵感炼金术</h2>
+              <span class="inspiration-count" id="inspirationCount">0 条灵感</span>
+            </div>
+
+            <!-- 快速记录 -->
+            <div class="inspiration-input-card">
+              <textarea id="inspirationInput" class="inspiration-textarea" placeholder="闪过一个想法？快记下来..." rows="2"></textarea>
+              <div class="inspiration-input-row">
+                <div class="inspiration-tags">
+                  <button class="tag-btn" data-tag="设定">设定</button>
+                  <button class="tag-btn" data-tag="人物">人物</button>
+                  <button class="tag-btn" data-tag="情节">情节</button>
+                  <button class="tag-btn" data-tag="对白">对白</button>
+                  <button class="tag-btn" data-tag="随想">随想</button>
+                </div>
+                <button class="btn-green btn-small" id="addInspirationBtn">记录</button>
+              </div>
+            </div>
+
+            <!-- 灵感列表 -->
+            <div class="section-title">灵感碎片</div>
+            <div class="inspiration-list" id="inspirationList">
+              <div class="empty-hint">还没有灵感，随时记录你的想法</div>
+            </div>
+
+            <!-- 炼金区 -->
+            <div class="alchemy-section">
+              <div class="section-title">炼金工坊</div>
+              <div class="alchemy-hint">选择 2-5 条灵感，点击炼金合成</div>
+              <button class="btn-primary btn-small" id="alchemyBtn" disabled>开始炼金</button>
+              <div class="alchemy-result" id="alchemyResult" style="display:none">
+                <div class="alchemy-result-title" id="alchemyTitle"></div>
+                <div class="alchemy-result-text" id="alchemyText"></div>
+              </div>
+            </div>
+
+            <!-- 历史配方 -->
+            <div class="recipe-section" id="recipeSection" style="display:none">
+              <div class="section-title">炼金记录</div>
+              <div class="recipe-list" id="recipeList"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 收藏馆页面 -->
+        <section class="page" id="page-museum">
+          <div class="museum-container">
+            <div class="museum-header">
+              <h2 class="world-title">小蓝鸟收藏馆</h2>
+              <span class="museum-subtitle" id="museumSubtitle">记录你的数字足迹</span>
+            </div>
+
+            <!-- 总览统计 -->
+            <div class="museum-stats" id="museumStats">
+              <div class="museum-stat-card">
+                <div class="museum-stat-value" id="msTotalDays">0</div>
+                <div class="museum-stat-label">使用天数</div>
+              </div>
+              <div class="museum-stat-card">
+                <div class="museum-stat-value" id="msTotalHours">0</div>
+                <div class="museum-stat-label">总记录时长(h)</div>
+              </div>
+              <div class="museum-stat-card">
+                <div class="museum-stat-value" id="msJournalCount">0</div>
+                <div class="museum-stat-label">日记篇数</div>
+              </div>
+              <div class="museum-stat-card">
+                <div class="museum-stat-value" id="msMemeCount">0</div>
+                <div class="museum-stat-label">共同梗</div>
+              </div>
+            </div>
+
+            <!-- 常用工具展柜 -->
+            <div class="museum-section">
+              <div class="section-title">常用工具展柜</div>
+              <div class="museum-tools" id="museumTools">
+                <div class="empty-hint">加载中…</div>
+              </div>
+            </div>
+
+            <!-- 关键词云 -->
+            <div class="museum-section">
+              <div class="section-title">日记关键词</div>
+              <div class="museum-wordcloud" id="museumWordcloud">
+                <div class="empty-hint">需要积累更多日记</div>
+              </div>
+            </div>
+
+            <!-- 梗库精选 -->
+            <div class="museum-section">
+              <div class="section-title">梗库精选</div>
+              <div class="museum-memes" id="museumMemes">
+                <div class="empty-hint">暂无梗</div>
+              </div>
+            </div>
           </div>
         </section>
       </main>
+
+      <!-- 设置浮层 -->
+      <div class="settings-overlay" id="settingsOverlay">
+        <div class="settings-panel">
+          <div class="settings-panel-header">
+            <span class="settings-panel-title">设置</span>
+            <button class="btn-small" id="viewMemesBtn" style="margin-left:auto;margin-right:8px">梗库</button>
+            <button class="settings-close-btn" id="settingsCloseBtn">✕</button>
+          </div>
+          <label class="field-label">外观</label>
+          <div class="theme-switch-row">
+            <span class="theme-switch-label" id="themeSwitchLabel">浅色</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="themeToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <label class="field-label">DeepSeek API Key</label>
+          <input type="password" id="apiKeyInput" class="field-input field-wide" placeholder="sk-...">
+
+          <label class="field-label">日记语言</label>
+          <select id="langSelect" class="field-select field-narrow">
+            <option value="chinese">中文</option>
+            <option value="english">English</option>
+            <option value="bilingual">混合</option>
+          </select>
+
+          <label class="field-label">数据存放目录</label>
+          <div class="field-row">
+            <input type="text" id="dataDirInput" class="field-input">
+            <button class="btn-small" id="browseDirBtn">浏览</button>
+          </div>
+
+          <label class="field-label">监测间隔（秒）</label>
+          <input type="number" id="intervalInput" class="field-input field-short" min="5" value="30">
+
+          <label class="field-label">每日活动目标（分钟，0=不设置）</label>
+          <input type="number" id="goalInput" class="field-input field-short" min="0" value="0">
+
+          <label class="field-label">小鸡性格</label>
+          <div class="personality-grid" id="personalityGrid">
+            <div class="personality-card selected" data-personality="gentle">
+              <span class="personality-emoji">🌸</span>
+              <span class="personality-name">温柔</span>
+              <span class="personality-desc">温暖体贴的小伙伴</span>
+            </div>
+            <div class="personality-card" data-personality="sarcastic">
+              <span class="personality-emoji">🔥</span>
+              <span class="personality-name">毒舌</span>
+              <span class="personality-desc">嘴硬心软的损友</span>
+            </div>
+            <div class="personality-card" data-personality="chuuni">
+              <span class="personality-emoji">⚡</span>
+              <span class="personality-name">中二</span>
+              <span class="personality-desc">命运觉醒的勇者</span>
+            </div>
+            <div class="personality-card" data-personality="shy">
+              <span class="personality-emoji">🫧</span>
+              <span class="personality-name">社恐</span>
+              <span class="personality-desc">害羞但很细心</span>
+            </div>
+          </div>
+
+          <button class="btn-primary btn-save-settings" id="saveSettingsBtn">保存设置</button>
+          <span class="settings-status" id="settingsStatus"></span>
+        </div>
+      </div>
+
+      <!-- 梗库弹窗 -->
+      <div class="memes-overlay" id="memesOverlay">
+        <div class="memes-panel">
+          <div class="report-panel-header">
+            <span class="report-panel-title">共同梗库</span>
+            <button class="settings-close-btn" id="memesCloseBtn">✕</button>
+          </div>
+          <div class="memes-actions">
+            <div class="meme-add-row">
+              <input type="text" id="memeAddInput" class="field-input" placeholder="输入自定义梗...">
+              <button class="btn-green btn-small" id="memeAddBtn">添加</button>
+            </div>
+            <button class="btn-small" id="refreshMemesBtn">刷新梗库</button>
+          </div>
+          <div class="memes-list" id="memesList">
+            <div class="empty-hint">暂无梗，积累几天数据后刷新试试</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 小剧场浮层 -->
+      <div class="theater-overlay" id="theaterOverlay">
+        <div class="theater-panel">
+          <div class="report-panel-header">
+            <span class="report-panel-title" id="theaterTitle">🎭 一日番外</span>
+            <button class="settings-close-btn" id="theaterCloseBtn">✕</button>
+          </div>
+          <div class="theater-content" id="theaterContent">
+            <div class="empty-hint">生成中…</div>
+          </div>
+          <div class="theater-branches" id="theaterBranches"></div>
+          <div class="theater-actions">
+            <button class="btn-small" id="theaterHistoryBtn">历史小剧场</button>
+          </div>
+        </div>
+      </div>
 
       <!-- 底部状态栏 -->
       <footer class="status-bar">
@@ -124,8 +625,13 @@
   </div>
 
   <script src="scripts/app.js"></script>
+  <script src="scripts/personality.js"></script>
+  <script src="scripts/home.js"></script>
   <script src="scripts/monitor.js"></script>
   <script src="scripts/journal.js"></script>
+  <script src="scripts/world.js"></script>
+  <script src="scripts/inspiration.js"></script>
+  <script src="scripts/museum.js"></script>
   <script src="scripts/settings.js"></script>
 </body>
 </html>

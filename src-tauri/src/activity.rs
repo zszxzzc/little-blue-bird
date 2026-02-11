@@ -69,3 +69,38 @@ pub fn summarize(entries: &[ActivityEntry]) -> Vec<(String, u64)> {
     sorted.sort_by(|a, b| b.1.cmp(&a.1));
     sorted
 }
+
+/// 获取最近 N 天每天的总活动时长（秒），返回 [(日期, 秒数)]
+pub fn daily_totals(data_dir: &PathBuf, days: usize) -> Vec<(String, u64)> {
+    use chrono::Local;
+    let today = Local::now().date_naive();
+    let mut result = Vec::new();
+    for i in (0..days).rev() {
+        let date = today - chrono::Duration::days(i as i64);
+        let ds = date.format("%Y-%m-%d").to_string();
+        let entries = load_entries(data_dir, &ds);
+        let total: u64 = entries.iter().map(|e| e.duration).sum();
+        result.push((ds, total));
+    }
+    result
+}
+
+/// 获取最近 N 天的分类汇总
+pub fn range_summary(data_dir: &PathBuf, days: usize) -> Vec<(String, u64)> {
+    use chrono::Local;
+    let today = Local::now().date_naive();
+    let mut map: HashMap<String, u64> = HashMap::new();
+    for i in 0..days {
+        let date = today - chrono::Duration::days(i as i64);
+        let ds = date.format("%Y-%m-%d").to_string();
+        let entries = load_entries(data_dir, &ds);
+        for e in &entries {
+            if e.duration < 30 { continue; }
+            let cat = categorize(&e.exe, &e.title);
+            *map.entry(cat.to_string()).or_insert(0) += e.duration;
+        }
+    }
+    let mut sorted: Vec<(String, u64)> = map.into_iter().collect();
+    sorted.sort_by(|a, b| b.1.cmp(&a.1));
+    sorted
+}
