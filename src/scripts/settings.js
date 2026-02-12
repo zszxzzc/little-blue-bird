@@ -36,8 +36,136 @@ personalityCards.forEach(card => {
     personalityCards.forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     selectedPersonality = card.dataset.personality;
+    // 显示/隐藏自定义性格编辑区
+    const customEl = document.getElementById('customPersonality');
+    if (customEl) customEl.style.display = selectedPersonality === 'custom' ? 'block' : 'none';
   });
 });
+
+// === 小鸟尺寸选择 ===
+let selectedBirdSize = 'large';
+const birdSizeGrid = document.getElementById('birdSizeGrid');
+if (birdSizeGrid) {
+  birdSizeGrid.querySelectorAll('.bird-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      birdSizeGrid.querySelectorAll('.bird-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedBirdSize = btn.dataset.size;
+    });
+  });
+}
+
+// === AI 引擎管理 ===
+let aiProviders = [];
+let activeProviderId = '';
+let writingProviderId = '';
+
+function renderProviderList() {
+  const list = document.getElementById('providerList');
+  if (!list) return;
+  if (aiProviders.length === 0) {
+    list.innerHTML = '<div class="empty-hint">暂无 AI 接口</div>';
+  } else {
+    list.innerHTML = aiProviders.map((p, i) => `
+      <div class="provider-card ${p.enabled ? 'active-provider' : ''}" data-idx="${i}">
+        <div class="provider-card-header">
+          <span class="provider-card-name">${p.name || p.id}</span>
+          <div class="provider-card-actions">
+            <button class="provider-test-btn" data-idx="${i}">测试</button>
+            <button class="provider-delete-btn" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="provider-card-row">
+          <label>API Key</label>
+          <input type="password" class="field-input provider-apikey" data-idx="${i}" value="${p.api_key || ''}" placeholder="sk-...">
+        </div>
+        <div class="provider-card-row">
+          <label>Base URL</label>
+          <input type="text" class="field-input provider-baseurl" data-idx="${i}" value="${p.base_url || ''}" placeholder="https://api.deepseek.com/v1">
+        </div>
+        <div class="provider-card-row">
+          <label>Model</label>
+          <input type="text" class="field-input provider-model" data-idx="${i}" value="${p.model || ''}" placeholder="deepseek-chat">
+        </div>
+      </div>
+    `).join('');
+
+    // 绑定测试按钮
+    list.querySelectorAll('.provider-test-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.dataset.idx);
+        syncProviderFromUI(idx);
+        btn.textContent = '测试中...';
+        btn.className = 'provider-test-btn';
+        try {
+          await invoke('test_ai_provider', { provider: aiProviders[idx] });
+          btn.textContent = '成功';
+          btn.classList.add('success');
+        } catch(e) {
+          btn.textContent = '失败';
+          btn.classList.add('fail');
+        }
+        setTimeout(() => { btn.textContent = '测试'; btn.className = 'provider-test-btn'; }, 3000);
+      });
+    });
+
+    // 绑定删除按钮
+    list.querySelectorAll('.provider-delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.dataset.idx);
+        if (confirm('确定删除此接口？')) {
+          aiProviders.splice(idx, 1);
+          renderProviderList();
+          renderProviderSelects();
+        }
+      });
+    });
+
+    // 输入变化时同步
+    list.querySelectorAll('.field-input').forEach(input => {
+      input.addEventListener('change', () => {
+        const idx = parseInt(input.dataset.idx);
+        syncProviderFromUI(idx);
+      });
+    });
+  }
+}
+
+function syncProviderFromUI(idx) {
+  const list = document.getElementById('providerList');
+  if (!list || !aiProviders[idx]) return;
+  const card = list.querySelector(`.provider-card[data-idx="${idx}"]`);
+  if (!card) return;
+  const apikey = card.querySelector('.provider-apikey');
+  const baseurl = card.querySelector('.provider-baseurl');
+  const model = card.querySelector('.provider-model');
+  if (apikey) aiProviders[idx].api_key = apikey.value;
+  if (baseurl) aiProviders[idx].base_url = baseurl.value;
+  if (model) aiProviders[idx].model = model.value;
+}
+
+function renderProviderSelects() {
+  const activeSelect = document.getElementById('activeProviderSelect');
+  const writingSelect = document.getElementById('writingProviderSelect');
+  const options = aiProviders.map(p => `<option value="${p.id}">${p.name || p.id}</option>`).join('');
+  if (activeSelect) { activeSelect.innerHTML = options; activeSelect.value = activeProviderId; }
+  if (writingSelect) { writingSelect.innerHTML = options; writingSelect.value = writingProviderId; }
+}
+
+const addProviderBtn = document.getElementById('addProviderBtn');
+if (addProviderBtn) {
+  addProviderBtn.addEventListener('click', () => {
+    const name = prompt('接口名称：');
+    if (!name || !name.trim()) return;
+    const id = 'custom-' + Date.now();
+    aiProviders.push({
+      id, name: name.trim(), api_key: '', base_url: '', model: '',
+      temperature: 0.7, enabled: true,
+    });
+    renderProviderList();
+    renderProviderSelects();
+  });
+}
 
 // 加载配置
 async function loadSettings() {
@@ -53,6 +181,35 @@ async function loadSettings() {
     personalityCards.forEach(c => {
       c.classList.toggle('selected', c.dataset.personality === selectedPersonality);
     });
+    // 自定义性格编辑区
+    const customEl = document.getElementById('customPersonality');
+    if (customEl) customEl.style.display = selectedPersonality === 'custom' ? 'block' : 'none';
+    if (cfg.custom_personality) {
+      const cp = cfg.custom_personality;
+      const nameEl = document.getElementById('customPersonalityName');
+      const descEl = document.getElementById('customPersonalityDesc');
+      const catchEl = document.getElementById('customPersonalityCatchphrase');
+      const freqEl = document.getElementById('customSpeechFreq');
+      const toneEl = document.getElementById('customTone');
+      if (nameEl) nameEl.value = cp.name || '';
+      if (descEl) descEl.value = cp.description || '';
+      if (catchEl) catchEl.value = cp.catchphrase || '';
+      if (freqEl) freqEl.value = cp.speech_frequency || 3;
+      if (toneEl) toneEl.value = cp.tone || 3;
+    }
+    // 小鸟尺寸
+    selectedBirdSize = cfg.bird_size || 'large';
+    if (birdSizeGrid) {
+      birdSizeGrid.querySelectorAll('.bird-size-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.size === selectedBirdSize);
+      });
+    }
+    // AI 引擎
+    aiProviders = cfg.ai_providers || [];
+    activeProviderId = cfg.active_provider || '';
+    writingProviderId = cfg.writing_provider || '';
+    renderProviderList();
+    renderProviderSelects();
   } catch (e) {
     console.error('load config:', e);
   }
@@ -70,6 +227,24 @@ browseDirBtn.addEventListener('click', async () => {
 
 // 保存设置
 saveSettingsBtn.addEventListener('click', async () => {
+  // 同步所有 provider 输入
+  aiProviders.forEach((_, i) => syncProviderFromUI(i));
+
+  // 收集自定义性格
+  let customPersonality = null;
+  if (selectedPersonality === 'custom') {
+    customPersonality = {
+      name: (document.getElementById('customPersonalityName')?.value || '').trim(),
+      description: (document.getElementById('customPersonalityDesc')?.value || '').trim(),
+      catchphrase: (document.getElementById('customPersonalityCatchphrase')?.value || '').trim(),
+      speech_frequency: parseInt(document.getElementById('customSpeechFreq')?.value) || 3,
+      tone: parseInt(document.getElementById('customTone')?.value) || 3,
+    };
+  }
+
+  const activeSelect = document.getElementById('activeProviderSelect');
+  const writingSelect = document.getElementById('writingProviderSelect');
+
   const cfg = {
     api_key: apiKeyInput.value.trim(),
     language: langSelect.value,
@@ -77,7 +252,13 @@ saveSettingsBtn.addEventListener('click', async () => {
     interval: Math.max(5, parseInt(intervalInput.value) || 30),
     daily_goal_minutes: Math.max(0, parseInt(goalInput.value) || 0),
     personality: selectedPersonality,
+    bird_size: selectedBirdSize,
+    ai_providers: aiProviders,
+    active_provider: activeSelect ? activeSelect.value : '',
+    writing_provider: writingSelect ? writingSelect.value : '',
   };
+  if (customPersonality) cfg.custom_personality = customPersonality;
+
   try {
     await invoke('save_config', { cfg });
     settingsStatus.textContent = '设置已保存 ✓';

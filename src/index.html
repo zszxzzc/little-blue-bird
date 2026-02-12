@@ -48,6 +48,9 @@
       <button class="nav-btn" data-page="museum" title="收藏馆">
         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg></span><span class="nav-label">收藏馆</span>
       </button>
+      <button class="nav-btn" data-page="writing" title="写作">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span class="nav-label">写作</span>
+      </button>
       <div class="nav-spacer"></div>
       <div class="nav-status-dot" id="navStatusDot">●</div>
     </nav>
@@ -443,6 +446,7 @@
               <div class="alchemy-hint">选择 2-5 条灵感，点击炼金合成</div>
               <button class="btn-primary btn-small" id="alchemyBtn" disabled>开始炼金</button>
               <div class="alchemy-result" id="alchemyResult" style="display:none">
+                <button class="alchemy-close-btn" id="alchemyCloseBtn" title="关闭">✕</button>
                 <div class="alchemy-result-title" id="alchemyTitle"></div>
                 <div class="alchemy-result-text" id="alchemyText"></div>
               </div>
@@ -509,7 +513,316 @@
             </div>
           </div>
         </section>
+
+        <!-- 写作页面 -->
+        <section class="page" id="page-writing">
+          <div class="writing-layout">
+            <!-- 左侧结构树 -->
+            <div class="writing-sidebar-left" id="writingSidebarLeft">
+              <div class="writing-sidebar-header">
+                <span class="writing-sidebar-title">结构</span>
+                <div class="writing-sidebar-header-actions">
+                  <button class="btn-icon tree-style-toggle" id="treeStyleToggle" title="切换风格">⚙</button>
+                  <button class="btn-icon" id="addVolumeBtn" title="新建卷">+</button>
+                </div>
+              </div>
+              <div class="writing-tree" id="writingTree">
+                <div class="empty-hint">暂无内容，点击 + 新建卷</div>
+              </div>
+            </div>
+
+            <!-- 中间编辑区 -->
+            <div class="writing-main">
+              <div class="writing-toolbar">
+                <button class="toolbar-btn" id="writingSaveBtn" title="保存">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>保存</span>
+                </button>
+                <button class="toolbar-btn" id="writingExportBtn" title="导出">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span>导出</span>
+                </button>
+                <button class="toolbar-btn" id="writingForeshadowBtn" title="创建伏笔（选中文字后点击）">
+                  <span>🧵</span>
+                  <span>伏笔</span>
+                </button>
+                <button class="toolbar-btn" id="writingAiSuggestBtn" title="AI 续写建议">
+                  <span>💡</span>
+                  <span>AI建议</span>
+                </button>
+                <button class="toolbar-btn" id="writingAiCheckBtn" title="一致性检查">
+                  <span>🔍</span>
+                  <span>检查</span>
+                </button>
+                <span class="writing-status" id="writingStatus"></span>
+                <button class="toolbar-btn toolbar-btn-right" id="writingFocusBtn" title="专注模式">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"/></svg>
+                  <span>专注</span>
+                </button>
+              </div>
+              <div class="writing-editor-container">
+                <textarea id="writingEditor" class="writing-editor" placeholder="开始写作..."></textarea>
+                <!-- 小鸟写作伙伴 -->
+                <div class="writing-bird" id="writingBird" data-size="large" data-expression="idle">
+                  <div class="bird-speech" id="birdSpeech">
+                    <span class="bird-speech-text" id="birdSpeechText"></span>
+                  </div>
+                  <div class="bird-body" id="birdBody">
+                    <svg viewBox="0 0 64 64" fill="none" class="bird-svg">
+                      <!-- 翅膀(后) -->
+                      <ellipse cx="10" cy="28" rx="6" ry="3.5" fill="#3B8DD4" transform="rotate(-30 10 28)"/>
+                      <ellipse cx="8" cy="31" rx="5" ry="3" fill="#5AABF0" transform="rotate(-15 8 31)"/>
+                      <!-- 身体 -->
+                      <ellipse cx="30" cy="37" rx="17" ry="16" fill="#4A9EE0"/>
+                      <!-- 头 -->
+                      <circle cx="40" cy="21" r="14" fill="#4A9EE0"/>
+                      <!-- 头毛 -->
+                      <ellipse cx="36" cy="8" rx="1.8" ry="4.5" fill="#3B8DD4" transform="rotate(-15 36 8)"/>
+                      <ellipse cx="40" cy="7.5" rx="1.5" ry="4" fill="#5AABF0" transform="rotate(5 40 7.5)"/>
+                      <ellipse cx="43" cy="9" rx="1.3" ry="3.5" fill="#3B8DD4" transform="rotate(20 43 9)"/>
+                      <!-- 翅膀(前) -->
+                      <g class="bird-wing"><ellipse cx="18" cy="35" rx="11" ry="8" fill="#3B8DD4"/><ellipse cx="17.5" cy="34" rx="8" ry="5.5" fill="#5AABF0"/></g>
+                      <!-- normal 眼睛 -->
+                      <g class="bird-eye bird-eye-normal">
+                        <circle cx="46" cy="18" r="4.5" fill="white"/>
+                        <circle cx="47.2" cy="18" r="3" fill="#1a1a2e"/>
+                        <circle cx="48.2" cy="16.8" r="1.2" fill="white"/>
+                        <circle cx="46.5" cy="19" r="0.6" fill="white"/>
+                      </g>
+                      <!-- peeking 眼睛(偷看) -->
+                      <g class="bird-eye-peeking">
+                        <circle cx="46" cy="18" r="4.5" fill="white"/>
+                        <circle cx="48" cy="18" r="3" fill="#1a1a2e"/>
+                        <circle cx="49" cy="16.8" r="1.2" fill="white"/>
+                      </g>
+                      <!-- surprised 眼睛(惊讶) -->
+                      <g class="bird-eye-surprised">
+                        <circle cx="46" cy="18" r="5.5" fill="white"/>
+                        <circle cx="47" cy="18" r="3.5" fill="#1a1a2e"/>
+                        <circle cx="48.5" cy="16.5" r="1.5" fill="white"/>
+                      </g>
+                      <!-- sleeping 眼睛 -->
+                      <g class="bird-eye-sleeping">
+                        <line x1="43" y1="18" x2="49" y2="18" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="43.5" y1="16" x2="45" y2="17.5" stroke="#1a1a2e" stroke-width="1.2" stroke-linecap="round"/>
+                      </g>
+                      <!-- laughing 眼睛(偷笑) -->
+                      <g class="bird-eye-laughing">
+                        <path d="M43,17 Q46,13 49,17" stroke="#1a1a2e" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                      </g>
+                      <!-- reading 眼睛(戴眼镜) -->
+                      <g class="bird-eye-reading">
+                        <circle cx="46" cy="18" r="4.5" fill="white"/>
+                        <circle cx="47.2" cy="18" r="3" fill="#1a1a2e"/>
+                        <circle cx="48.2" cy="16.8" r="1.2" fill="white"/>
+                        <circle cx="46" cy="18" r="6" fill="none" stroke="#555" stroke-width="1"/>
+                        <line x1="40" y1="18" x2="35" y2="16" stroke="#555" stroke-width="1"/>
+                      </g>
+                      <!-- gone 状态(隐藏整个鸟) -->
+                      <!-- zzz -->
+                      <g class="bird-zzz">
+                        <text x="52" y="10" font-size="7" fill="#8E8E93" font-weight="bold">z</text>
+                        <text x="56" y="6" font-size="5" fill="#8E8E93" font-weight="bold">z</text>
+                      </g>
+                      <!-- 嘴巴 -->
+                      <ellipse cx="55" cy="23" rx="4" ry="2.2" fill="#FF8F00"/>
+                      <ellipse cx="55" cy="24.2" rx="3.5" ry="1.5" fill="#F57C00"/>
+                      <!-- 腮红 -->
+                      <circle class="bird-blush" cx="44" cy="27.5" r="3.5" fill="#FF8A80" opacity="0.3"/>
+                      <!-- 脚 -->
+                      <path d="M26,52 L23,58 M26,52 L26.5,58.5 M26,52 L29.5,57" stroke="#FF8F00" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M35,52 L32,58 M35,52 L35.5,58.5 M35,52 L38.5,57" stroke="#FF8F00" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                </div>
+                <!-- 小鸟右键菜单 -->
+                <div class="bird-context-menu" id="birdContextMenu">
+                  <div class="context-menu-item" data-action="personality-gentle">温柔</div>
+                  <div class="context-menu-item" data-action="personality-sarcastic">毒舌</div>
+                  <div class="context-menu-item" data-action="personality-chuuni">中二</div>
+                  <div class="context-menu-item" data-action="personality-cold">冷淡</div>
+                  <div class="context-menu-item" data-action="personality-custom">自定义</div>
+                  <div class="context-menu-divider"></div>
+                  <div class="context-menu-item" data-action="size-small">小</div>
+                  <div class="context-menu-item" data-action="size-medium">中</div>
+                  <div class="context-menu-item" data-action="size-large">大</div>
+                  <div class="context-menu-item" data-action="size-xlarge">超大</div>
+                  <div class="context-menu-divider"></div>
+                  <div class="context-menu-item" data-action="mute">静音</div>
+                </div>
+                <!-- 小鸟对话模式 -->
+                <div class="bird-chat-box" id="birdChatBox">
+                  <div class="bird-chat-messages" id="birdChatMessages"></div>
+                  <div class="bird-chat-input-row">
+                    <input type="text" id="birdChatInput" class="bird-chat-input" placeholder="和小鸟聊聊剧情...">
+                    <button class="btn-small bird-chat-send" id="birdChatSend">发送</button>
+                  </div>
+                </div>
+                <!-- 右键菜单 -->
+                <div class="writing-context-menu" id="writingContextMenu">
+                  <div class="context-menu-item" id="ctxResolveForeshadow">回收伏笔</div>
+                </div>
+              </div>
+              <div class="writing-statusbar" id="writingStatusbar">
+                <span class="ws-item" id="wsChapterCount">本章：0 字</span>
+                <span class="ws-divider">|</span>
+                <span class="ws-item" id="wsTotalCount">全书：0 字</span>
+                <span class="ws-divider">|</span>
+                <span class="ws-item" id="wsTodayCount">今日：0 字</span>
+                <span class="ws-divider">|</span>
+                <span class="ws-item" id="wsStreak">连续写作：0 天</span>
+                <span class="ws-spacer"></span>
+                <span class="ws-item ws-save-status" id="wsSaveStatus"></span>
+              </div>
+            </div>
+
+            <!-- 右侧信息面板 -->
+            <div class="writing-sidebar-right" id="writingSidebarRight">
+              <div class="writing-info-tabs">
+                <button class="writing-info-tab active" data-tab="characters">人物</button>
+                <button class="writing-info-tab" data-tab="foreshadows">伏笔</button>
+                <button class="writing-info-tab" data-tab="settings">设定</button>
+                <button class="writing-info-tab" data-tab="memos">备忘</button>
+              </div>
+              <div class="writing-info-content" id="writingInfoContent">
+                <div class="writing-info-panel active" id="panel-characters">
+                  <button class="info-add-btn" id="addCharacterBtn">+ 添加人物</button>
+                  <div class="character-list" id="characterList">
+                    <div class="info-empty">暂无人物</div>
+                  </div>
+                </div>
+                <div class="writing-info-panel" id="panel-foreshadows">
+                  <div class="foreshadow-list" id="foreshadowList">
+                    <div class="info-empty">暂无伏笔</div>
+                  </div>
+                </div>
+                <div class="writing-info-panel" id="panel-settings">
+                  <div class="worldbuilding-search">
+                    <input type="text" id="worldbuildingSearchInput" class="search-input" placeholder="搜索设定...">
+                  </div>
+                  <div class="worldbuilding-results" id="worldbuildingResults"></div>
+                  <button class="info-add-btn" id="addWorldbuildingBtn">+ 添加设定</button>
+                  <div class="worldbuilding-list" id="worldbuildingList">
+                    <div class="info-empty">暂无设定</div>
+                  </div>
+                </div>
+                <div class="writing-info-panel" id="panel-memos">
+                  <div class="chapter-memo-section">
+                    <label class="memo-label">本章大纲</label>
+                    <textarea class="memo-textarea" id="chapterOutline" placeholder="这章要写什么..."></textarea>
+                  </div>
+                  <div class="chapter-memo-section">
+                    <label class="memo-label">情绪基调</label>
+                    <input type="text" class="memo-input" id="chapterMood" placeholder="如：紧张 → 绝望 → 反转">
+                  </div>
+                  <div class="chapter-memo-section">
+                    <label class="memo-label">写作笔记</label>
+                    <textarea class="memo-textarea" id="chapterNotes" placeholder="随手记..."></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
+
+      <!-- 人物档案弹窗 -->
+      <div class="char-profile-overlay" id="charProfileOverlay">
+        <div class="char-profile-panel">
+          <div class="report-panel-header">
+            <span class="report-panel-title" id="charProfileTitle">人物档案</span>
+            <button class="settings-close-btn" id="charProfileCloseBtn">✕</button>
+          </div>
+          <div class="char-profile-body">
+            <div class="char-profile-row">
+              <label class="memo-label">姓名</label>
+              <input type="text" class="memo-input" id="charName" placeholder="角色名">
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">角色类型</label>
+              <select class="memo-input" id="charRole">
+                <option value="protagonist">主角</option>
+                <option value="supporting">配角</option>
+                <option value="antagonist">反派</option>
+                <option value="minor">路人</option>
+              </select>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">外貌</label>
+              <textarea class="memo-textarea" id="charAppearance" placeholder="外貌描述..."></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">性格</label>
+              <textarea class="memo-textarea" id="charPersonality" placeholder="性格特点..."></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">能力</label>
+              <textarea class="memo-textarea" id="charAbilities" placeholder="能力/技能..."></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">人际关系</label>
+              <textarea class="memo-textarea" id="charRelationships" placeholder="与其他角色的关系..."></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">出场章节</label>
+              <div class="char-chapters" id="charChapters">自动统计</div>
+            </div>
+          </div>
+          <div class="char-profile-actions">
+            <button class="btn-green btn-small" id="charProfileSaveBtn">保存</button>
+            <button class="btn-small btn-danger-small" id="charProfileDeleteBtn">删除人物</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 创建伏笔弹窗 -->
+      <div class="foreshadow-create-overlay" id="foreshadowCreateOverlay">
+        <div class="foreshadow-create-panel">
+          <div class="report-panel-header">
+            <span class="report-panel-title">🧵 创建伏笔</span>
+            <button class="settings-close-btn" id="fsCreateCloseBtn">✕</button>
+          </div>
+          <div class="foreshadow-create-body">
+            <div class="char-profile-row">
+              <label class="memo-label">伏笔描述（必填）</label>
+              <textarea class="memo-textarea" id="fsDescription" placeholder="这条伏笔是什么..."></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">原文引用</label>
+              <textarea class="memo-textarea" id="fsQuote" placeholder="选中的原文" readonly></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">预计回收章节（可选）</label>
+              <input type="text" class="memo-input" id="fsExpectedChapter" placeholder="如：第10章">
+            </div>
+          </div>
+          <div class="char-profile-actions">
+            <button class="btn-green btn-small" id="fsCreateSaveBtn">创建伏笔</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 回收伏笔弹窗 -->
+      <div class="foreshadow-resolve-overlay" id="foreshadowResolveOverlay">
+        <div class="foreshadow-resolve-panel">
+          <div class="report-panel-header">
+            <span class="report-panel-title">回收伏笔</span>
+            <button class="settings-close-btn" id="fsResolveCloseBtn">✕</button>
+          </div>
+          <div class="foreshadow-resolve-body">
+            <div class="char-profile-row">
+              <label class="memo-label">回收引文</label>
+              <textarea class="memo-textarea" id="fsResolveQuote" readonly></textarea>
+            </div>
+            <div class="char-profile-row">
+              <label class="memo-label">选择要回收的伏笔</label>
+              <div class="fs-resolve-list" id="fsResolveList">
+                <div class="info-empty">暂无未回收伏笔</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 设置浮层 -->
       <div class="settings-overlay" id="settingsOverlay">
@@ -572,6 +885,58 @@
               <span class="personality-name">社恐</span>
               <span class="personality-desc">害羞但很细心</span>
             </div>
+            <div class="personality-card" data-personality="cold">
+              <span class="personality-emoji">🧊</span>
+              <span class="personality-name">冷淡</span>
+              <span class="personality-desc">话少但在看着你</span>
+            </div>
+            <div class="personality-card" data-personality="custom">
+              <span class="personality-emoji">✏️</span>
+              <span class="personality-name">自定义</span>
+              <span class="personality-desc">你来定义小鸟</span>
+            </div>
+          </div>
+
+          <!-- 自定义性格编辑区 -->
+          <div class="custom-personality" id="customPersonality" style="display:none">
+            <label class="field-label">性格名称</label>
+            <input type="text" id="customPersonalityName" class="field-input" placeholder="如：自恋鸟">
+            <label class="field-label">人设描述（作为 AI prompt）</label>
+            <textarea id="customPersonalityDesc" class="field-textarea" rows="4" placeholder="你是一只自恋的小蓝鸟，觉得自己是全世界最帅的鸟..."></textarea>
+            <label class="field-label">口癖/常用语气词</label>
+            <input type="text" id="customPersonalityCatchphrase" class="field-input" placeholder="如：哼哼、本大爷、切~">
+            <label class="field-label">说话频率</label>
+            <div class="range-row">
+              <span class="range-label">低</span>
+              <input type="range" id="customSpeechFreq" min="1" max="5" value="3">
+              <span class="range-label">高</span>
+            </div>
+            <label class="field-label">评价倾向</label>
+            <div class="range-row">
+              <span class="range-label">夸</span>
+              <input type="range" id="customTone" min="1" max="5" value="3">
+              <span class="range-label">损</span>
+            </div>
+          </div>
+
+          <!-- 写作小鸟尺寸 -->
+          <label class="field-label">写作小鸟尺寸</label>
+          <div class="bird-size-grid" id="birdSizeGrid">
+            <button class="bird-size-btn" data-size="small">小</button>
+            <button class="bird-size-btn" data-size="medium">中</button>
+            <button class="bird-size-btn active" data-size="large">大</button>
+            <button class="bird-size-btn" data-size="xlarge">超大</button>
+          </div>
+
+          <!-- AI 引擎管理 -->
+          <label class="field-label">AI 引擎管理</label>
+          <div class="ai-provider-section">
+            <div class="provider-list" id="providerList"></div>
+            <button class="btn-small" id="addProviderBtn">+ 添加接口</button>
+            <label class="field-label">日记模块使用</label>
+            <select id="activeProviderSelect" class="field-select"></select>
+            <label class="field-label">写作模块使用</label>
+            <select id="writingProviderSelect" class="field-select"></select>
           </div>
 
           <button class="btn-primary btn-save-settings" id="saveSettingsBtn">保存设置</button>
@@ -632,6 +997,7 @@
   <script src="scripts/world.js"></script>
   <script src="scripts/inspiration.js"></script>
   <script src="scripts/museum.js"></script>
+  <script src="scripts/writing.js"></script>
   <script src="scripts/settings.js"></script>
 </body>
 </html>

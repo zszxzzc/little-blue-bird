@@ -16,6 +16,8 @@ mod villain;
 mod vocab;
 mod world;
 mod theater;
+mod writing;
+mod ai_provider;
 
 use commands::{TrayState, TrackerState};
 use std::sync::Mutex;
@@ -137,6 +139,56 @@ fn main() {
             commands::alchemy_synthesize,
             commands::get_personality_growth,
             commands::add_personality_affinity,
+            commands::get_writing_structure,
+            commands::create_volume,
+            commands::create_chapter,
+            commands::update_volume,
+            commands::update_chapter,
+            commands::delete_volume,
+            commands::delete_chapter,
+            commands::load_chapter_content,
+            commands::save_chapter_content,
+            commands::get_info_panel,
+            commands::add_info_item,
+            commands::delete_info_item,
+            commands::load_chapter_memo,
+            commands::save_chapter_memo,
+            commands::update_chapter_status,
+            commands::get_characters,
+            commands::add_character,
+            commands::update_character,
+            commands::delete_character,
+            commands::get_character_chapters,
+            commands::get_foreshadows,
+            commands::add_foreshadow,
+            commands::resolve_foreshadow,
+            commands::delete_foreshadow,
+            commands::get_writing_stats,
+            commands::save_chapter_content_with_scan,
+            // 书籍管理
+            commands::create_book,
+            commands::get_book_meta,
+            commands::update_book_meta,
+            commands::rename_chapter_cmd,
+            commands::update_book_chapter_status,
+            commands::delete_book_chapter,
+            commands::reorder_chapters,
+            // 快照
+            commands::create_snapshot,
+            commands::list_snapshots,
+            commands::load_snapshot,
+            // 设定集
+            commands::get_worldbuilding,
+            commands::save_worldbuilding,
+            commands::search_worldbuilding,
+            // AI Provider
+            commands::test_ai_provider,
+            // AI 写作辅助
+            commands::ai_writing_suggest,
+            commands::ai_consistency_check,
+            commands::ai_foreshadow_detect,
+            commands::ai_chapter_summary,
+            commands::ai_bird_comment,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

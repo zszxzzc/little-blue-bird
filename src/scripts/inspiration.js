@@ -7,10 +7,18 @@
   let selectedNoteIds = new Set();
   let allNotes = [];
 
-  // 页面激活时加载
+  // 页面激活时加载 + 重置炼金结果
   window.addEventListener('page-change', (e) => {
-    if (e.detail === 'inspiration') loadNotes();
+    if (e.detail === 'inspiration') {
+      loadNotes();
+      resetAlchemyResult();
+    }
   });
+
+  function resetAlchemyResult() {
+    const resultDiv = document.getElementById('alchemyResult');
+    if (resultDiv) resultDiv.style.display = 'none';
+  }
 
   // 标签切换
   document.querySelectorAll('.tag-btn').forEach(btn => {
@@ -95,7 +103,8 @@
       : '开始炼金';
   }
 
-  // 炼金合成
+  // 关闭炼金结果
+  document.getElementById('alchemyCloseBtn')?.addEventListener('click', resetAlchemyResult);
   document.getElementById('alchemyBtn')?.addEventListener('click', async () => {
     const ids = [...selectedNoteIds];
     const resultDiv = document.getElementById('alchemyResult');

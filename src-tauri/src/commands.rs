@@ -12,6 +12,8 @@ use crate::world;
 use crate::theater;
 use crate::vocab;
 use crate::inspiration;
+use crate::writing;
+use crate::ai_provider;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -397,7 +399,11 @@ pub async fn alchemy_synthesize(note_ids: Vec<u32>, app: AppHandle) -> Result<St
         persona.ai_persona
     );
 
-    let user_msg = format!("请将以下灵感碎片炼金合成：\n{}", material);
+    let user_msg = format!(
+        "请将以下灵感碎片炼金合成（请给出全新的、不同于之前的创意角度，seed={}）：\n{}",
+        chrono::Local::now().timestamp_millis(),
+        material
+    );
     claude_api::call_api_stream(&app, &cfg.api_key, &cfg.model, &system_prompt, &user_msg).await
 }
 
@@ -409,4 +415,332 @@ pub fn get_personality_growth() -> Result<crate::personality::PersonalityGrowth,
 #[tauri::command]
 pub fn add_personality_affinity(amount: u32) -> Result<crate::personality::PersonalityGrowth, String> {
     Ok(crate::personality::add_affinity(&get_data_dir(), amount))
+}
+
+// === 写作模块命令 ===
+
+#[tauri::command]
+pub fn get_writing_structure() -> Result<writing::WritingStructure, String> {
+    Ok(writing::load_structure(&get_data_dir()))
+}
+
+#[tauri::command]
+pub fn create_volume(title: String) -> Result<writing::WritingStructure, String> {
+    writing::create_volume(&get_data_dir(), title)
+}
+
+#[tauri::command]
+pub fn create_chapter(volume_id: String, title: String) -> Result<writing::WritingStructure, String> {
+    writing::create_chapter(&get_data_dir(), volume_id, title)
+}
+
+#[tauri::command]
+pub fn update_volume(volume_id: String, title: String) -> Result<writing::WritingStructure, String> {
+    writing::update_volume(&get_data_dir(), volume_id, title)
+}
+
+#[tauri::command]
+pub fn update_chapter(volume_id: String, chapter_id: String, title: String) -> Result<writing::WritingStructure, String> {
+    writing::update_chapter(&get_data_dir(), volume_id, chapter_id, title)
+}
+
+#[tauri::command]
+pub fn delete_volume(volume_id: String) -> Result<writing::WritingStructure, String> {
+    writing::delete_volume(&get_data_dir(), volume_id)
+}
+
+#[tauri::command]
+pub fn delete_chapter(volume_id: String, chapter_id: String) -> Result<writing::WritingStructure, String> {
+    writing::delete_chapter(&get_data_dir(), volume_id, chapter_id)
+}
+
+#[tauri::command]
+pub fn load_chapter_content(chapter_id: String) -> String {
+    writing::load_chapter_content(&get_data_dir(), chapter_id)
+}
+
+#[tauri::command]
+pub fn save_chapter_content(chapter_id: String, content: String) -> Result<(), String> {
+    writing::save_chapter_content(&get_data_dir(), chapter_id, content)
+}
+
+#[tauri::command]
+pub fn get_info_panel() -> Result<writing::InfoPanel, String> {
+    Ok(writing::load_info_panel(&get_data_dir()))
+}
+
+#[tauri::command]
+pub fn add_info_item(panel_type: String, content: String) -> Result<writing::InfoPanel, String> {
+    writing::add_info_item(&get_data_dir(), panel_type, content)
+}
+
+#[tauri::command]
+pub fn delete_info_item(panel_type: String, item_id: String) -> Result<writing::InfoPanel, String> {
+    writing::delete_info_item(&get_data_dir(), panel_type, item_id)
+}
+
+#[tauri::command]
+pub fn load_chapter_memo(chapter_id: String) -> writing::ChapterMemo {
+    writing::load_chapter_memo(&get_data_dir(), chapter_id)
+}
+
+#[tauri::command]
+pub fn save_chapter_memo(memo: writing::ChapterMemo) -> Result<(), String> {
+    writing::save_chapter_memo(&get_data_dir(), &memo)
+}
+
+#[tauri::command]
+pub fn update_chapter_status(volume_id: String, chapter_id: String, status: String) -> Result<writing::WritingStructure, String> {
+    writing::update_chapter_status(&get_data_dir(), volume_id, chapter_id, status)
+}
+
+// === 人物系统命令 ===
+
+#[tauri::command]
+pub fn get_characters() -> Result<writing::CharacterStore, String> {
+    Ok(writing::load_characters(&get_data_dir()))
+}
+
+#[tauri::command]
+pub fn add_character(character: writing::Character) -> Result<writing::CharacterStore, String> {
+    writing::add_character(&get_data_dir(), character)
+}
+
+#[tauri::command]
+pub fn update_character(character: writing::Character) -> Result<writing::CharacterStore, String> {
+    writing::update_character(&get_data_dir(), character)
+}
+
+#[tauri::command]
+pub fn delete_character(character_id: String) -> Result<writing::CharacterStore, String> {
+    writing::delete_character(&get_data_dir(), &character_id)
+}
+
+#[tauri::command]
+pub fn get_character_chapters(char_id: String) -> Result<Vec<writing::CharacterChapter>, String> {
+    Ok(writing::get_character_chapters(&get_data_dir(), &char_id))
+}
+
+// === 伏笔追踪命令 ===
+
+#[tauri::command]
+pub fn get_foreshadows() -> Result<writing::ForeshadowStore, String> {
+    Ok(writing::get_foreshadows_with_urgency(&get_data_dir()))
+}
+
+#[tauri::command]
+pub fn add_foreshadow(foreshadow: writing::Foreshadow) -> Result<writing::ForeshadowStore, String> {
+    writing::add_foreshadow(&get_data_dir(), foreshadow)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn resolve_foreshadow(foreshadow_id: String, resolved_chapter: String, resolved_quote: String) -> Result<writing::ForeshadowStore, String> {
+    writing::resolve_foreshadow(&get_data_dir(), &foreshadow_id, resolved_chapter, resolved_quote)
+}
+
+#[tauri::command]
+pub fn delete_foreshadow(foreshadow_id: String) -> Result<writing::ForeshadowStore, String> {
+    writing::delete_foreshadow(&get_data_dir(), &foreshadow_id)
+}
+
+// === 字数统计命令 ===
+
+#[tauri::command]
+pub fn get_writing_stats(chapter_id: String) -> Result<writing::WritingStats, String> {
+    Ok(writing::get_writing_stats(&get_data_dir(), &chapter_id))
+}
+
+// === 保存章节时扫描人物出场 ===
+
+#[tauri::command]
+pub fn save_chapter_content_with_scan(chapter_id: String, content: String) -> Result<(), String> {
+    writing::save_chapter_content(&get_data_dir(), chapter_id, content.clone())?;
+    // 保存后扫描人物出场
+    writing::scan_character_mentions(&get_data_dir(), &content)?;
+    Ok(())
+}
+
+// === 书籍管理命令 ===
+
+#[tauri::command]
+pub fn create_book(title: String) -> Result<writing::BookMeta, String> {
+    writing::create_book(&get_data_dir(), title)
+}
+
+#[tauri::command]
+pub fn get_book_meta(book_id: String) -> Result<writing::BookMeta, String> {
+    writing::load_book_meta(&get_data_dir(), &book_id)
+}
+
+#[tauri::command]
+pub fn update_book_meta(meta: writing::BookMeta) -> Result<(), String> {
+    writing::save_book_meta(&get_data_dir(), &meta)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn rename_chapter_cmd(book_id: String, chapter_id: String, title: String) -> Result<(), String> {
+    writing::rename_chapter(&get_data_dir(), &book_id, &chapter_id, title)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn update_book_chapter_status(book_id: String, chapter_id: String, status: String) -> Result<(), String> {
+    writing::update_book_chapter_status(&get_data_dir(), &book_id, &chapter_id, status)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn delete_book_chapter(book_id: String, chapter_id: String) -> Result<(), String> {
+    writing::delete_book_chapter(&get_data_dir(), &book_id, &chapter_id)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn reorder_chapters(book_id: String, volume_id: String, chapter_ids: Vec<String>) -> Result<(), String> {
+    writing::reorder_chapters(&get_data_dir(), &book_id, &volume_id, chapter_ids)
+}
+
+// === 快照命令 ===
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn create_snapshot(book_id: String, chapter_id: String) -> Result<(), String> {
+    writing::create_snapshot(&get_data_dir(), &book_id, &chapter_id)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn list_snapshots(book_id: String, chapter_id: String) -> Result<Vec<writing::SnapshotInfo>, String> {
+    Ok(writing::list_snapshots(&get_data_dir(), &book_id, &chapter_id))
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub fn load_snapshot(book_id: String, chapter_id: String, snapshot_id: String) -> Result<String, String> {
+    writing::load_snapshot(&get_data_dir(), &book_id, &chapter_id, &snapshot_id)
+}
+
+// === 设定集命令 ===
+
+#[tauri::command]
+pub fn get_worldbuilding(book_id: String) -> Result<serde_json::Value, String> {
+    Ok(writing::load_worldbuilding(&get_data_dir(), &book_id))
+}
+
+#[tauri::command]
+pub fn save_worldbuilding(book_id: String, data: serde_json::Value) -> Result<(), String> {
+    writing::save_worldbuilding(&get_data_dir(), &book_id, &data)
+}
+
+#[tauri::command]
+pub fn search_worldbuilding(book_id: String, keyword: String) -> Result<Vec<writing::SearchResult>, String> {
+    Ok(writing::search_worldbuilding(&get_data_dir(), &book_id, &keyword))
+}
+
+// === AI Provider 命令 ===
+
+#[tauri::command]
+pub async fn test_ai_provider(provider: ai_provider::AIProvider) -> Result<bool, String> {
+    provider.test_connection().await
+}
+
+// === AI 写作辅助命令 ===
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_writing_suggest(_book_id: String, _chapter_id: String, context: String, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+
+    // 收集人物和设定信息作为上下文
+    let data_dir = get_data_dir();
+    let characters = writing::load_characters(&data_dir);
+    let mut char_info = String::new();
+    for c in &characters.characters {
+        char_info.push_str(&format!("- {}（{}）\n", c.name, c.role));
+    }
+
+    let system = format!(
+        "你是一个小说写作助手。根据以下上下文，给出3个不同的后续发展方向建议。\n\
+         每个建议用一句话概括方向，再用2-3句话描述具体可以怎么写。\n\
+         不要直接写正文，只给思路。\n\n\
+         {}",
+        if char_info.is_empty() { String::new() } else { format!("已知人物：\n{}\n", char_info) }
+    );
+
+    let user_msg = format!("当前内容：\n{}", context);
+    provider.chat_stream(&app, &system, &user_msg).await
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_consistency_check(book_id: String, chapter_id: String, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+    let data_dir = get_data_dir();
+
+    let chapter_content = writing::load_chapter_content(&data_dir, chapter_id);
+    if chapter_content.trim().is_empty() {
+        return Err("章节内容为空".to_string());
+    }
+
+    let characters = writing::load_characters(&data_dir);
+    let mut char_info = String::new();
+    for c in &characters.characters {
+        char_info.push_str(&format!("- {}：{} / {}\n", c.name, c.role, c.personality));
+    }
+
+    let worldbuilding = writing::load_worldbuilding(&data_dir, &book_id);
+    let wb_str: String = serde_json::to_string_pretty(&worldbuilding)
+        .unwrap_or_default()
+        .chars().take(2000).collect();
+
+    let system = "你是一个小说校对助手。对照以下设定资料，检查这章内容有没有矛盾或不一致的地方。\n\
+                  如果发现矛盾，指出具体位置和原因。如果没有问题，说\"未发现矛盾\"。";
+
+    let user_msg = format!(
+        "设定资料：\n{}\n\n人物档案：\n{}\n\n本章内容：\n{}",
+        wb_str, char_info, chapter_content
+    );
+
+    provider.chat_stream(&app, system, &user_msg).await
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_foreshadow_detect(_book_id: String, chapter_id: String, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+    let data_dir = get_data_dir();
+
+    let chapter_content = writing::load_chapter_content(&data_dir, chapter_id);
+    if chapter_content.trim().is_empty() {
+        return Err("章节内容为空".to_string());
+    }
+
+    let foreshadows = writing::load_foreshadows(&data_dir);
+    let mut fs_info = String::new();
+    for f in &foreshadows.items {
+        let status_str = if f.status == "resolved" { "已回收" } else { "未回收" };
+        fs_info.push_str(&format!("- [{}] {}：{}\n", status_str, f.id, f.description));
+    }
+
+    let system = "你是一个小说分析助手。阅读以下章节内容，找出可能是伏笔的地方（暗示、悬念、未解释的细节）。\n\
+                  列出你发现的潜在伏笔，以及是否可能回收了已有伏笔。";
+
+    let user_msg = format!(
+        "已知伏笔列表：\n{}\n\n本章内容：\n{}",
+        if fs_info.is_empty() { "（暂无）".to_string() } else { fs_info },
+        chapter_content
+    );
+
+    provider.chat_stream(&app, system, &user_msg).await
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_chapter_summary(_book_id: String, chapter_id: String, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+    let data_dir = get_data_dir();
+
+    let chapter_content = writing::load_chapter_content(&data_dir, chapter_id);
+    if chapter_content.trim().is_empty() {
+        return Err("章节内容为空".to_string());
+    }
+
+    let system = "你是一个小说摘要助手。用一句话概括这章的核心内容（不超过50字）。只输出摘要，不要其他内容。";
+    provider.chat_stream(&app, system, &chapter_content).await
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_bird_comment(text: String, prompt: String, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+    provider.chat_stream(&app, &prompt, &text).await
 }

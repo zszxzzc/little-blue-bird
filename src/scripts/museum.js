@@ -16,9 +16,11 @@
         invoke('get_range_summary', { days: 365 }),
       ]);
 
-      // 总览统计
-      const activeDays = totals.filter(([_, sec]) => sec > 0);
-      document.getElementById('msTotalDays').textContent = activeDays.length;
+      // 总览统计：合并活动日 + 日记日，去重
+      const daySet = new Set();
+      for (const [date, sec] of totals) { if (sec > 0) daySet.add(date); }
+      for (const d of journals) { daySet.add(d); }
+      document.getElementById('msTotalDays').textContent = daySet.size;
       const totalSec = totals.reduce((s, [_, sec]) => s + sec, 0);
       document.getElementById('msTotalHours').textContent = Math.round(totalSec / 3600);
       document.getElementById('msJournalCount').textContent = journals.length;
