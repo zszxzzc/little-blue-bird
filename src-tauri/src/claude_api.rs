@@ -1,7 +1,7 @@
 use chrono::Datelike;
 use crate::activity;
 use crate::tracker::ActivityEntry;
-use reqwest::header::{HeaderMap, AUTHORIZATION, CONTENT_TYPE};
+use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, CONTENT_TYPE};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter};
@@ -61,8 +61,10 @@ pub async fn call_api_stream(
     user_msg: &str,
 ) -> Result<String, String> {
     let mut headers = HeaderMap::new();
-    headers.insert(AUTHORIZATION, format!("Bearer {}", api_key).parse().unwrap());
-    headers.insert(CONTENT_TYPE, "application/json".parse().unwrap());
+    let auth = HeaderValue::from_str(&format!("Bearer {}", api_key))
+        .map_err(|e| format!("API key 无效: {}", e))?;
+    headers.insert(AUTHORIZATION, auth);
+    headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
 
     let body = ChatRequest {
         model: model.to_string(),
@@ -90,17 +92,43 @@ pub async fn call_api_stream(
 
     let mut full_text = String::new();
     let mut stream = resp.bytes_stream();
+    let mut pending = String::new();
+    let mut done = false;
 
     while let Some(chunk) = stream.next().await {
         let chunk = chunk.map_err(|e| format!("读取流失败: {}", e))?;
-        let text = String::from_utf8_lossy(&chunk);
+        pending.push_str(&String::from_utf8_lossy(&chunk));
 
-        for line in text.lines() {
-            let line = line.trim();
-            if !line.starts_with("data: ") { continue; }
+        while let Some(pos) = pending.find('\n') {
+            let line = pending[..pos].trim().to_string();
+            pending.drain(..=pos);
+            if !line.starts_with("data: ") {
+                continue;
+            }
             let data = &line[6..];
-            if data == "[DONE]" { break; }
+            if data == "[DONE]" {
+                done = true;
+                break;
+            }
 
+            if let Ok(parsed) = serde_json::from_str::<StreamChunk>(data) {
+                if let Some(choice) = parsed.choices.first() {
+                    if let Some(ref content) = choice.delta.content {
+                        full_text.push_str(content);
+                        let _ = app.emit("ai-chunk", content.clone());
+                    }
+                }
+            }
+        }
+        if done {
+            break;
+        }
+    }
+
+    let tail = pending.trim();
+    if !done && tail.starts_with("data: ") {
+        let data = &tail[6..];
+        if data != "[DONE]" {
             if let Ok(parsed) = serde_json::from_str::<StreamChunk>(data) {
                 if let Some(choice) = parsed.choices.first() {
                     if let Some(ref content) = choice.delta.content {

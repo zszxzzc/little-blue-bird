@@ -101,6 +101,16 @@ fn chapter_memo_path(data_dir: &PathBuf, chapter_id: &str) -> PathBuf {
     data_dir.join("writing").join(format!("{}_memo.json", chapter_id))
 }
 
+fn ensure_safe_id(id: &str, field: &str) -> Result<(), String> {
+    if id.is_empty() || id.len() > 128 {
+        return Err(format!("{} 格式无效", field));
+    }
+    if !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '-') {
+        return Err(format!("{} 格式无效", field));
+    }
+    Ok(())
+}
+
 /// 加载信息面板
 pub fn load_info_panel(data_dir: &PathBuf) -> InfoPanel {
     let path = info_panel_path(data_dir);
@@ -166,6 +176,9 @@ pub fn delete_info_item(data_dir: &PathBuf, panel_type: String, item_id: String)
 
 /// 加载章节备忘
 pub fn load_chapter_memo(data_dir: &PathBuf, chapter_id: String) -> ChapterMemo {
+    if ensure_safe_id(&chapter_id, "chapter_id").is_err() {
+        return ChapterMemo::new(chapter_id);
+    }
     let path = chapter_memo_path(data_dir, &chapter_id);
     if path.exists() {
         fs::read_to_string(&path)
@@ -179,6 +192,7 @@ pub fn load_chapter_memo(data_dir: &PathBuf, chapter_id: String) -> ChapterMemo 
 
 /// 保存章节备忘
 pub fn save_chapter_memo(data_dir: &PathBuf, memo: &ChapterMemo) -> Result<(), String> {
+    ensure_safe_id(&memo.chapter_id, "chapter_id")?;
     let path = chapter_memo_path(data_dir, &memo.chapter_id);
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).ok();
@@ -308,11 +322,13 @@ pub fn update_chapter_status(data_dir: &PathBuf, volume_id: String, chapter_id: 
 
 /// 删除卷
 pub fn delete_volume(data_dir: &PathBuf, volume_id: String) -> Result<WritingStructure, String> {
+    ensure_safe_id(&volume_id, "volume_id")?;
     let mut structure = load_structure(data_dir);
 
     // 删除卷下所有章节的内容文件
     if let Some(volume) = structure.volumes.iter().find(|v| v.id == volume_id) {
         for chapter in &volume.chapters {
+            ensure_safe_id(&chapter.id, "chapter_id")?;
             let content_path = chapter_content_path(data_dir, &chapter.id);
             fs::remove_file(&content_path).ok();
         }
@@ -325,6 +341,8 @@ pub fn delete_volume(data_dir: &PathBuf, volume_id: String) -> Result<WritingStr
 
 /// 删除章
 pub fn delete_chapter(data_dir: &PathBuf, volume_id: String, chapter_id: String) -> Result<WritingStructure, String> {
+    ensure_safe_id(&volume_id, "volume_id")?;
+    ensure_safe_id(&chapter_id, "chapter_id")?;
     let mut structure = load_structure(data_dir);
 
     let volume = structure.volumes.iter_mut()
@@ -342,12 +360,16 @@ pub fn delete_chapter(data_dir: &PathBuf, volume_id: String, chapter_id: String)
 
 /// 加载章节内容
 pub fn load_chapter_content(data_dir: &PathBuf, chapter_id: String) -> String {
+    if ensure_safe_id(&chapter_id, "chapter_id").is_err() {
+        return String::new();
+    }
     let path = chapter_content_path(data_dir, &chapter_id);
     fs::read_to_string(&path).unwrap_or_default()
 }
 
 /// 保存章节内容
 pub fn save_chapter_content(data_dir: &PathBuf, chapter_id: String, content: String) -> Result<(), String> {
+    ensure_safe_id(&chapter_id, "chapter_id")?;
     let path = chapter_content_path(data_dir, &chapter_id);
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).ok();
@@ -452,7 +474,7 @@ pub fn delete_character(data_dir: &PathBuf, character_id: &str) -> Result<Charac
 }
 
 /// 扫描章节正文中的 @人物名，更新出场统计
-pub fn scan_character_mentions(data_dir: &PathBuf, content: &str) -> Result<(), String> {
+pub fn scan_character_mentions(data_dir: &PathBuf, _content: &str) -> Result<(), String> {
     let mut store = load_characters(data_dir);
     if store.characters.is_empty() {
         return Ok(());
@@ -477,8 +499,6 @@ pub fn scan_character_mentions(data_dir: &PathBuf, content: &str) -> Result<(), 
         }
     }
     // 也包含当前正在保存的内容（可能还没写入磁盘）
-    all_text.push_str(content);
-
     for character in &mut store.characters {
         let mut count = 0u32;
         // 匹配 @人物名
@@ -808,6 +828,7 @@ pub fn create_book(data_dir: &PathBuf, title: String) -> Result<BookMeta, String
 }
 
 pub fn load_book_meta(data_dir: &PathBuf, book_id: &str) -> Result<BookMeta, String> {
+    ensure_safe_id(book_id, "book_id")?;
     let path = book_meta_path(data_dir, book_id);
     if !path.exists() {
         return Err("书籍不存在".to_string());
@@ -817,6 +838,7 @@ pub fn load_book_meta(data_dir: &PathBuf, book_id: &str) -> Result<BookMeta, Str
 }
 
 pub fn save_book_meta(data_dir: &PathBuf, meta: &BookMeta) -> Result<(), String> {
+    ensure_safe_id(&meta.id, "book_id")?;
     let dir = book_dir(data_dir, &meta.id);
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     let json = serde_json::to_string_pretty(meta).map_err(|e| e.to_string())?;
@@ -848,6 +870,8 @@ pub fn update_book_chapter_status(data_dir: &PathBuf, book_id: &str, chapter_id:
 }
 
 pub fn delete_book_chapter(data_dir: &PathBuf, book_id: &str, chapter_id: &str) -> Result<(), String> {
+    ensure_safe_id(book_id, "book_id")?;
+    ensure_safe_id(chapter_id, "chapter_id")?;
     let mut meta = load_book_meta(data_dir, book_id)?;
     let dir = book_dir(data_dir, book_id);
     // 删除章节文件
@@ -863,17 +887,29 @@ pub fn delete_book_chapter(data_dir: &PathBuf, book_id: &str, chapter_id: &str) 
 }
 
 pub fn reorder_chapters(data_dir: &PathBuf, book_id: &str, volume_id: &str, chapter_ids: Vec<String>) -> Result<(), String> {
+    ensure_safe_id(book_id, "book_id")?;
+    ensure_safe_id(volume_id, "volume_id")?;
+    for cid in &chapter_ids {
+        ensure_safe_id(cid, "chapter_id")?;
+    }
     let mut meta = load_book_meta(data_dir, book_id)?;
     let vol = meta.volumes.iter_mut()
         .find(|v| v.id == volume_id)
         .ok_or("卷不存在")?;
 
-    let mut reordered = Vec::new();
-    for (i, cid) in chapter_ids.iter().enumerate() {
-        if let Some(mut ch) = vol.chapters.iter().find(|c| c.id == *cid).cloned() {
-            ch.order = i as u32;
+    let mut reordered: Vec<Chapter> = Vec::new();
+    for cid in &chapter_ids {
+        if let Some(ch) = vol.chapters.iter().find(|c| c.id == *cid).cloned() {
             reordered.push(ch);
         }
+    }
+    for ch in &vol.chapters {
+        if !chapter_ids.iter().any(|cid| cid == &ch.id) {
+            reordered.push(ch.clone());
+        }
+    }
+    for (i, ch) in reordered.iter_mut().enumerate() {
+        ch.order = i as u32;
     }
     vol.chapters = reordered;
     save_book_meta(data_dir, &meta)
@@ -891,6 +927,8 @@ pub struct SnapshotInfo {
 }
 
 pub fn create_snapshot(data_dir: &PathBuf, book_id: &str, chapter_id: &str) -> Result<(), String> {
+    ensure_safe_id(book_id, "book_id")?;
+    ensure_safe_id(chapter_id, "chapter_id")?;
     let dir = book_dir(data_dir, book_id);
     let chap_file = dir.join("chapters").join(format!("{}.md", chapter_id));
     let content = fs::read_to_string(&chap_file).unwrap_or_default();
@@ -906,6 +944,9 @@ pub fn create_snapshot(data_dir: &PathBuf, book_id: &str, chapter_id: &str) -> R
 }
 
 pub fn list_snapshots(data_dir: &PathBuf, book_id: &str, chapter_id: &str) -> Vec<SnapshotInfo> {
+    if ensure_safe_id(book_id, "book_id").is_err() || ensure_safe_id(chapter_id, "chapter_id").is_err() {
+        return Vec::new();
+    }
     let snap_dir = book_dir(data_dir, book_id).join("snapshots").join(chapter_id);
     let mut result = Vec::new();
     if !snap_dir.exists() {
@@ -931,6 +972,9 @@ pub fn list_snapshots(data_dir: &PathBuf, book_id: &str, chapter_id: &str) -> Ve
 }
 
 pub fn load_snapshot(data_dir: &PathBuf, book_id: &str, chapter_id: &str, snapshot_id: &str) -> Result<String, String> {
+    ensure_safe_id(book_id, "book_id")?;
+    ensure_safe_id(chapter_id, "chapter_id")?;
+    ensure_safe_id(snapshot_id, "snapshot_id")?;
     let snap_file = book_dir(data_dir, book_id)
         .join("snapshots").join(chapter_id).join(format!("{}.md", snapshot_id));
     fs::read_to_string(&snap_file).map_err(|e| format!("读取快照失败: {}", e))
@@ -945,6 +989,9 @@ fn worldbuilding_path(data_dir: &PathBuf, book_id: &str) -> PathBuf {
 }
 
 pub fn load_worldbuilding(data_dir: &PathBuf, book_id: &str) -> serde_json::Value {
+    if ensure_safe_id(book_id, "book_id").is_err() {
+        return serde_json::json!({});
+    }
     let path = worldbuilding_path(data_dir, book_id);
     if path.exists() {
         fs::read_to_string(&path)
@@ -957,6 +1004,7 @@ pub fn load_worldbuilding(data_dir: &PathBuf, book_id: &str) -> serde_json::Valu
 }
 
 pub fn save_worldbuilding(data_dir: &PathBuf, book_id: &str, data: &serde_json::Value) -> Result<(), String> {
+    ensure_safe_id(book_id, "book_id")?;
     let path = worldbuilding_path(data_dir, book_id);
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
@@ -972,6 +1020,9 @@ pub struct SearchResult {
 }
 
 pub fn search_worldbuilding(data_dir: &PathBuf, book_id: &str, keyword: &str) -> Vec<SearchResult> {
+    if ensure_safe_id(book_id, "book_id").is_err() {
+        return Vec::new();
+    }
     let data = load_worldbuilding(data_dir, book_id);
     let keyword_lower = keyword.to_lowercase();
     let mut results = Vec::new();

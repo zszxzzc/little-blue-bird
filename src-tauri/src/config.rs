@@ -50,29 +50,44 @@ impl Default for AppConfig {
     }
 }
 
-/// 获取 config.json 的路径
+/// 鑾峰彇 config.json 鐨勮矾寰?
 pub fn config_path() -> PathBuf {
     app_dir().join("config.json")
 }
 
 /// 获取应用根目录（config.json 所在目录）
 pub fn app_dir() -> PathBuf {
-    // 优先使用环境变量（开发时由 tauri 设置）
-    // 否则尝试找到包含 config.json 的目录
-    let candidates = vec![
-        PathBuf::from(r"D:\小玩意\小蓝鸟"),
-        std::env::current_exe()
-            .ok()
-            .and_then(|p| p.parent().map(|p| p.to_path_buf()))
-            .unwrap_or_default(),
-        std::env::current_dir().unwrap_or_default(),
-    ];
-    for dir in candidates {
-        if dir.join("config.json").exists() {
-            return dir;
+    let mut candidates: Vec<PathBuf> = Vec::new();
+
+    if let Ok(path) = std::env::var("XIAOLANNIAO_APP_DIR") {
+        if !path.trim().is_empty() {
+            candidates.push(PathBuf::from(path));
         }
     }
-    PathBuf::from(r"D:\小玩意\小蓝鸟")
+
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            candidates.push(parent.to_path_buf());
+            if let Some(pp) = parent.parent() {
+                candidates.push(pp.to_path_buf());
+            }
+        }
+    }
+
+    if let Ok(cwd) = std::env::current_dir() {
+        candidates.push(cwd);
+    }
+
+    for dir in &candidates {
+        if dir.join("config.json").exists() {
+            return dir.clone();
+        }
+    }
+
+    candidates
+        .into_iter()
+        .next()
+        .unwrap_or_else(|| PathBuf::from("."))
 }
 
 pub fn load_config() -> AppConfig {
