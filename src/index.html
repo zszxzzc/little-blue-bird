@@ -51,6 +51,9 @@
       <button class="nav-btn" data-page="writing" title="写作">
         <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span><span class="nav-label">写作</span>
       </button>
+      <button class="nav-btn" data-page="dream" title="梦境日志">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span class="nav-label">梦境</span>
+      </button>
       <div class="nav-spacer"></div>
       <div class="nav-status-dot" id="navStatusDot">●</div>
     </nav>
@@ -510,6 +513,62 @@
               <div class="museum-memes" id="museumMemes">
                 <div class="empty-hint">暂无梗</div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 梦境日志页面 -->
+        <section class="page" id="page-dream">
+          <div class="dream-layout">
+            <!-- 左栏：记录 -->
+            <div class="dream-record">
+              <h2 class="dream-section-title">🌙 记录梦境</h2>
+              <div class="dream-form">
+                <input type="text" id="dreamTitle" class="dream-input" placeholder="给这个梦起个名字...">
+                <textarea id="dreamContent" class="dream-textarea" placeholder="闭上眼，回忆梦境的画面..." rows="5"></textarea>
+                <div class="dream-meta-row">
+                  <div class="dream-moods" id="dreamMoods">
+                    <span class="mood-tag" data-mood="奇妙">😊 奇妙</span>
+                    <span class="mood-tag" data-mood="惊恐">😨 惊恐</span>
+                    <span class="mood-tag" data-mood="伤感">😢 伤感</span>
+                    <span class="mood-tag" data-mood="困惑">🤔 困惑</span>
+                    <span class="mood-tag" data-mood="美好">😍 美好</span>
+                    <span class="mood-tag" data-mood="荒诞">🌀 荒诞</span>
+                  </div>
+                </div>
+                <div class="dream-meta-row">
+                  <label class="dream-lucid-label"><input type="checkbox" id="dreamLucid"> 清醒梦</label>
+                  <div class="dream-vividness" id="dreamVividness">
+                    <span class="vividness-label">鲜明度</span>
+                    <span class="vividness-dot" data-level="1">●</span>
+                    <span class="vividness-dot" data-level="2">●</span>
+                    <span class="vividness-dot" data-level="3">●</span>
+                    <span class="vividness-dot" data-level="4">●</span>
+                    <span class="vividness-dot" data-level="5">●</span>
+                  </div>
+                </div>
+                <input type="text" id="dreamTags" class="dream-input" placeholder="标签，用逗号分隔">
+                <div class="dream-actions">
+                  <button id="saveDreamBtn" class="dream-btn primary">记录梦境</button>
+                  <button id="aiDreamBtn" class="dream-btn">✨ AI 解梦</button>
+                </div>
+                <div class="dream-ai-result" id="dreamAiResult" style="display:none">
+                  <div class="dream-ai-result-header">
+                    <span>🔮 解梦结果</span>
+                    <button class="dream-ai-close" id="dreamAiCloseBtn">✕</button>
+                  </div>
+                  <div class="dream-ai-result-text" id="dreamAiResultText"></div>
+                </div>
+              </div>
+              <h3 class="dream-section-subtitle">梦境记录</h3>
+              <div id="dreamList" class="dream-list"></div>
+            </div>
+            <!-- 右栏：图鉴 -->
+            <div class="dream-gallery">
+              <h2 class="dream-section-title">🔮 梦境图鉴</h2>
+              <div class="dream-stats" id="dreamStats"></div>
+              <div class="dream-cards" id="dreamCards"></div>
+              <div class="dream-tagcloud" id="dreamTagCloud"></div>
             </div>
           </div>
         </section>
@@ -999,5 +1058,7 @@
   <script src="scripts/museum.js"></script>
   <script src="scripts/writing.js"></script>
   <script src="scripts/settings.js"></script>
+  <script src="scripts/dream.js"></script>
+  <script src="scripts/voice-input.js"></script>
 </body>
 </html>

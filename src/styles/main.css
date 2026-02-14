@@ -4056,3 +4056,494 @@ body {
   cursor: pointer;
 }
 .provider-delete-btn:hover { color: #FF3B30; }
+
+/* ===== 语音输入 ===== */
+.voice-btn {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--card);
+  color: var(--secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 5;
+  opacity: 0.6;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.voice-btn:hover {
+  opacity: 1;
+  background: var(--border);
+  transform: scale(1.1);
+}
+
+.voice-btn--active {
+  opacity: 1;
+  background: #ff4444;
+  color: white;
+  animation: voice-pulse 1.5s ease-in-out infinite;
+}
+
+.voice-btn--active:hover {
+  background: #cc0000;
+}
+
+@keyframes voice-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(255, 68, 68, 0); }
+}
+
+/* inline 模式（用于 input 元素，如 birdChatInput） */
+.voice-btn--inline {
+  position: static;
+  width: 28px;
+  height: 28px;
+  opacity: 0.5;
+}
+
+.voice-btn--inline:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* === 梦境日志页 === */
+
+.dream-layout {
+  display: flex;
+  height: 100%;
+  gap: 24px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.dream-record {
+  width: 40%;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.dream-gallery {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.dream-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.dream-section-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 20px 0 10px;
+  color: var(--secondary);
+}
+
+/* 表单 */
+.dream-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dream-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--editor-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dream-input:focus {
+  border-color: var(--accent);
+}
+
+.dream-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--editor-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 100px;
+}
+
+.dream-textarea:focus {
+  border-color: var(--accent);
+}
+
+.dream-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 情绪标签 */
+.dream-moods {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mood-tag {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--secondary);
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.mood-tag:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.mood-tag.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* 清醒梦 */
+.dream-lucid-label {
+  font-size: 13px;
+  color: var(--secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 鲜明度 */
+.dream-vividness {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.vividness-label {
+  font-size: 12px;
+  color: var(--secondary);
+  margin-right: 4px;
+}
+
+.vividness-dot {
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--border);
+  transition: color 0.2s;
+  user-select: none;
+}
+
+.vividness-dot.active {
+  color: var(--accent);
+}
+
+/* 按钮 */
+.dream-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dream-btn {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+
+.dream-btn:hover {
+  border-color: var(--accent);
+}
+
+.dream-btn.primary {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.dream-btn.primary:hover {
+  background: var(--accent-hover);
+}
+
+.dream-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* 梦境列表 */
+.dream-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dream-item {
+  background: var(--card);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.dream-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dream-item-header:hover {
+  background: var(--bg);
+}
+
+.dream-item-date {
+  font-size: 11px;
+  color: var(--secondary);
+  flex-shrink: 0;
+}
+
+.dream-item-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dream-item-mood {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.dream-item-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--secondary);
+}
+
+.dream-item-del {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  padding: 2px 4px;
+}
+
+.dream-item-header:hover .dream-item-del {
+  opacity: 1;
+}
+
+.dream-item-del:hover {
+  color: #ff4444;
+}
+
+.dream-item-body {
+  padding: 0 12px 12px;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.dream-item-content {
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+
+.dream-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--secondary);
+  margin-right: 6px;
+  margin-bottom: 6px;
+}
+
+.dream-analysis {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--secondary);
+}
+
+.dream-ai-result {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.dream-ai-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.dream-ai-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--secondary);
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.dream-ai-close:hover { background: var(--hover); }
+.dream-ai-result-text {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+/* 图鉴统计 */
+.dream-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.dream-stat {
+  flex: 1;
+  min-width: 80px;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.dream-stat-val {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.dream-stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--secondary);
+}
+
+/* 梦境卡片网格 */
+.dream-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.dream-card {
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.dream-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dream-card-date {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.dream-card-stars {
+  font-size: 12px;
+  margin: 6px 0;
+  opacity: 0.9;
+}
+
+.dream-card-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.dream-card-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.2);
+}
+
+/* 标签云 */
+.dream-tagcloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.dream-cloud-tag {
+  color: var(--accent);
+  cursor: default;
+  transition: opacity 0.2s;
+}
+
+.dream-cloud-tag:hover {
+  opacity: 0.7;
+}

@@ -18,6 +18,7 @@ mod world;
 mod theater;
 mod writing;
 mod ai_provider;
+mod dream;
 
 use commands::{TrayState, TrackerState};
 use std::sync::Mutex;
@@ -189,6 +190,12 @@ fn main() {
             commands::ai_foreshadow_detect,
             commands::ai_chapter_summary,
             commands::ai_bird_comment,
+            // 梦境日志
+            commands::save_dream,
+            commands::load_dreams,
+            commands::delete_dream,
+            commands::update_dream_analysis,
+            commands::ai_dream_analysis,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -14,6 +14,7 @@ use crate::vocab;
 use crate::inspiration;
 use crate::writing;
 use crate::ai_provider;
+use crate::dream;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Mutex;
@@ -743,4 +744,40 @@ pub async fn ai_chapter_summary(_book_id: String, chapter_id: String, app: AppHa
 pub async fn ai_bird_comment(text: String, prompt: String, app: AppHandle) -> Result<String, String> {
     let provider = ai_provider::get_writing_provider()?;
     provider.chat_stream(&app, &prompt, &text).await
+}
+
+// === 梦境日志命令 ===
+
+#[tauri::command]
+pub fn save_dream(dream: dream::Dream) -> Result<(), String> {
+    dream::save(&get_data_dir(), &dream)
+}
+
+#[tauri::command]
+pub fn load_dreams() -> Result<Vec<dream::Dream>, String> {
+    Ok(dream::load_all(&get_data_dir()))
+}
+
+#[tauri::command]
+pub fn delete_dream(id: String) -> Result<(), String> {
+    dream::delete(&get_data_dir(), &id)
+}
+
+#[tauri::command]
+pub fn update_dream_analysis(id: String, analysis: String) -> Result<(), String> {
+    dream::update_analysis(&get_data_dir(), &id, &analysis)
+}
+
+#[tauri::command(rename_all = "snake_case")]
+pub async fn ai_dream_analysis(title: String, content: String, mood: String, lucid: bool, app: AppHandle) -> Result<String, String> {
+    let provider = ai_provider::get_writing_provider()?;
+
+    let lucid_str = if lucid { "是" } else { "否" };
+    let system = "你是一位温柔的梦境分析师。请分析以下梦境，从心理学角度给出简短解读（3-5句话），语气温暖有趣，不要太严肃。";
+    let user_msg = format!(
+        "梦境标题：{}\n梦境内容：{}\n情绪：{}\n是否清醒梦：{}",
+        title, content, mood, lucid_str
+    );
+
+    provider.chat_stream(&app, system, &user_msg).await
 }
